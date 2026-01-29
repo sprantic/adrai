@@ -1,0 +1,25 @@
+# adrAI Review Notes - personal annotations stored locally
+# Notes are in ~/.adts/review-notes.yaml but this entry is for reference
+# and in case someone copies notes into the repo
+
+# AIDE blueprint (external reference, not part of this repo)
+assets/aide-blueprint/
+
+# VS Code Extension build artifacts
+tools/adts-review-notes/out/
+tools/adts-review-notes/node_modules/
+tools/adts-review-notes/*.vsix
+
+# Node.js / Bun
+node_modules/
+npm-debug.log*
+bun.lockb
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo

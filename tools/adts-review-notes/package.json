@@ -1,0 +1,218 @@
+{
+  "name": "adts-review-notes",
+  "displayName": "adrAI Review Notes",
+  "description": "Personal annotation layer for adrAI artifact review with debate promotion",
+  "version": "0.1.0",
+  "publisher": "sprantic",
+  "author": {
+    "name": "sprantic"
+  },
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e3a5f",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "review",
+    "notes",
+    "annotation",
+    "debate",
+    "adrAI",
+    "AIDE"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "adts-review-notes",
+          "title": "Review Notes",
+          "icon": "media/icons/review-notes.svg"
+        }
+      ]
+    },
+    "views": {
+      "adts-review-notes": [
+        {
+          "id": "adtsReviewNotes",
+          "name": "Review Notes",
+          "icon": "media/icons/review-notes.svg",
+          "contextualTitle": "adrAI Review Notes"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "adts.addNote",
+        "title": "adrAI: Add Review Note",
+        "icon": "$(add)"
+      },
+      {
+        "command": "adts.addLocation",
+        "title": "adrAI: Add Location to Note",
+        "icon": "$(link)"
+      },
+      {
+        "command": "adts.showPanel",
+        "title": "adrAI: Toggle Review Notes Panel"
+      },
+      {
+        "command": "adts.promoteToDebate",
+        "title": "adrAI: Promote to Debate",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "adts.resolveNote",
+        "title": "adrAI: Resolve Note",
+        "icon": "$(check)"
+      },
+      {
+        "command": "adts.editNote",
+        "title": "adrAI: Edit Note",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "adts.deleteNote",
+        "title": "adrAI: Delete Note",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "adts.refreshNotes",
+        "title": "adrAI: Refresh Notes",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "adts.goToLocation",
+        "title": "adrAI: Go to Location"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "adts.addNote",
+        "key": "ctrl+shift+n",
+        "mac": "cmd+shift+n",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "adts.addLocation",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "adts.showPanel",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "adts.addNote",
+          "when": "view == adtsReviewNotes",
+          "group": "navigation"
+        },
+        {
+          "command": "adts.refreshNotes",
+          "when": "view == adtsReviewNotes",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "adts.addLocation",
+          "when": "view == adtsReviewNotes && viewItem == note",
+          "group": "inline"
+        },
+        {
+          "command": "adts.promoteToDebate",
+          "when": "view == adtsReviewNotes && viewItem == note",
+          "group": "1_actions"
+        },
+        {
+          "command": "adts.resolveNote",
+          "when": "view == adtsReviewNotes && viewItem == note",
+          "group": "1_actions"
+        },
+        {
+          "command": "adts.editNote",
+          "when": "view == adtsReviewNotes && viewItem == note",
+          "group": "2_edit"
+        },
+        {
+          "command": "adts.deleteNote",
+          "when": "view == adtsReviewNotes && viewItem == note",
+          "group": "3_delete"
+        },
+        {
+          "command": "adts.goToLocation",
+          "when": "view == adtsReviewNotes && viewItem == location",
+          "group": "inline"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "adts.addNote",
+          "group": "adts",
+          "when": "editorTextFocus"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "adrAI Review Notes",
+      "properties": {
+        "adts.storageLocation": {
+          "type": "string",
+          "default": "~/.adts/review-notes.yaml",
+          "description": "Path to the review notes YAML file"
+        },
+        "adts.debateTemplateDir": {
+          "type": "string",
+          "default": "docs/debates/templates",
+          "description": "Path to debate templates directory relative to workspace"
+        },
+        "adts.debatesDir": {
+          "type": "string",
+          "default": "docs/debates",
+          "description": "Path to debates directory relative to workspace"
+        },
+        "adts.groupBy": {
+          "type": "string",
+          "enum": ["status", "type", "file"],
+          "default": "status",
+          "description": "How to group notes in the panel"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "bun run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "bun run compile",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "yaml": "^2.3.4",
+    "uuid": "^9.0.1"
+  }
+}

@@ -1,0 +1,131 @@
+# adrAI Dependency Mesh
+# Tracks blocking relationships between debates, plans, and ADRs
+#
+# Schema version: 1.0
+# Last updated: YYYY-MM-DD
+
+version: "1.0"
+
+# =============================================================================
+# NODES: All trackable artifacts
+# =============================================================================
+
+nodes:
+  # Debates (DEB-NNNN)
+  debates: {}
+    # Example:
+    # DEB-0001:
+    #   status: active
+    #   owner: "@architect"
+    #   created: "2026-01-29"
+    #   updated: "2026-01-29"
+    #   priority: 2
+    #   title: "Database Technology Selection"
+    #   stakeholders: ["@dev1", "@pm", "@architect"]
+    #   complexity_score: 12
+    #   scope: CON
+
+  # AIDE Plans (AIDE-NNNN)
+  plans: {}
+    # Example:
+    # AIDE-0145:
+    #   status: blocked
+    #   blocked_since: "2026-01-20"
+    #   title: "Implement Order Service"
+    #   scope: DES
+
+  # Architecture Decision Records (ADR-NNN)
+  adrs: {}
+    # Example:
+    # ADR-015:
+    #   status: pending
+    #   title: "Database Selection Decision"
+    #   scope: ARC
+
+# =============================================================================
+# EDGES: Blocking relationships
+# =============================================================================
+
+edges:
+  # Forward edges: X blocks Y
+  # Read as: "DEB-0001 blocks [DEB-0002, AIDE-0145]"
+  blocks: {}
+    # Example:
+    # DEB-0001: [DEB-0002, AIDE-0145, ADR-015]
+    # DEB-0002: [AIDE-0146]
+
+  # Reverse edges: Auto-generated from 'blocks' for efficient lookup
+  # Read as: "DEB-0002 is blocked by [DEB-0001]"
+  blocked_by: {}
+    # Example:
+    # DEB-0002: [DEB-0001]
+    # AIDE-0145: [DEB-0001]
+    # AIDE-0146: [DEB-0002]
+    # ADR-015: [DEB-0001]
+
+# =============================================================================
+# METADATA: Graph statistics
+# =============================================================================
+
+metadata:
+  total_nodes: 0
+  total_edges: 0
+  last_validated: null
+  cycles_detected: []
+  orphan_nodes: []
+
+# =============================================================================
+# OPERATIONS REFERENCE
+# =============================================================================
+#
+# 1. Critical Path: "What must resolve before X?"
+#    Algorithm: Reverse topological sort from target
+#    Usage: criticalPath("AIDE-0145") -> ["DEB-0001", "DEB-0002"]
+#
+# 2. Impact Analysis: "If X resolves as Thesis A?"
+#    Algorithm: Forward BFS from resolved node
+#    Usage: impactAnalysis("DEB-0001", "ThesisA") -> {unlocked: 3, conflicts: 1}
+#
+# 3. Resolution Order: "Best sequence to resolve?"
+#    Algorithm: Weighted topological sort by priority and staleness
+#    Usage: resolutionOrder() -> Priority queue of debates
+#
+# 4. Cycle Detection: "Any circular dependencies?"
+#    Algorithm: Three-color DFS
+#    Usage: detectCycles() -> [] or ["DEB-0001 -> DEB-0002 -> DEB-0001"]
+#
+# 5. Staleness Detection: "What's blocking progress?"
+#    Formula: staleness = (age_days * 3) + (blocked_count * 15) + (stakeholder_count * 5) * priority_multiplier
+#    Usage: staleDebates(threshold=50) -> [{id, score, reason}]
+#
+# 6. What-If Analysis: "Simulate resolving X"
+#    Algorithm: Graph snapshot + simulation
+#    Usage: whatIf("DEB-0001", "resolved") -> {before: graph, after: graph, diff: changes}
+#
+# =============================================================================
+
+# =============================================================================
+# MERMAID GENERATION
+# =============================================================================
+#
+# To generate a Mermaid diagram from this graph:
+#
+# graph TD
+#     DEB-0001[DEB-0001: Database Choice]:::active
+#     AIDE-0145[AIDE-0145: Order Service]:::blocked
+#
+#     DEB-0001 --> AIDE-0145
+#
+#     classDef resolved fill:#9f9
+#     classDef active fill:#9cf
+#     classDef blocked fill:#f99
+#     classDef draft fill:#fff
+#
+# Status color mapping:
+#   resolved -> green (#9f9)
+#   active -> blue (#9cf)
+#   blocked -> red (#f99)
+#   draft -> white (#fff)
+#   deciding -> yellow (#ff9)
+#
+# =============================================================================
