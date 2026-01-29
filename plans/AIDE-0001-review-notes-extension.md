@@ -50,12 +50,12 @@ VS Code extension providing:
 
 | File | Description |
 |------|-------------|
-| `tools/adts-review-notes/package.json` | Extension manifest with commands, keybindings, configuration |
-| `tools/adts-review-notes/src/extension.ts` | Main extension entry point |
-| `tools/adts-review-notes/src/noteStorage.ts` | YAML-based note persistence |
-| `tools/adts-review-notes/src/noteTreeProvider.ts` | Sidebar tree view |
-| `tools/adts-review-notes/src/debatePromoter.ts` | Note → Debate promotion |
-| `tools/adts-review-notes/src/types.ts` | TypeScript interfaces |
+| `tools/adrai-review-notes/package.json` | Extension manifest with commands, keybindings, configuration |
+| `tools/adrai-review-notes/src/extension.ts` | Main extension entry point |
+| `tools/adrai-review-notes/src/noteStorage.ts` | YAML-based note persistence |
+| `tools/adrai-review-notes/src/noteTreeProvider.ts` | Sidebar tree view |
+| `tools/adrai-review-notes/src/debatePromoter.ts` | Note → Debate promotion |
+| `tools/adrai-review-notes/src/types.ts` | TypeScript interfaces |
 | `docs/debates/review-workflow.md` | Workflow documentation |
 
 ### Features Implemented

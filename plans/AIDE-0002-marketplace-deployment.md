@@ -45,10 +45,10 @@ Add marketplace-required files and update package.json with proper metadata.
 
 | File | Change Type | Description |
 |------|-------------|-------------|
-| `tools/adts-review-notes/LICENSE` | Create | MIT license file |
-| `tools/adts-review-notes/CHANGELOG.md` | Create | Version history |
-| `tools/adts-review-notes/media/icon.png` | Copy | Use existing `assets/adrai.png` |
-| `tools/adts-review-notes/package.json` | Modify | Add publisher, icon, license, galleryBanner |
+| `tools/adrai-review-notes/LICENSE` | Create | MIT license file |
+| `tools/adrai-review-notes/CHANGELOG.md` | Create | Version history |
+| `tools/adrai-review-notes/media/icon.png` | Copy | Use existing `assets/adrai.png` |
+| `tools/adrai-review-notes/package.json` | Modify | Add publisher, icon, license, galleryBanner |
 
 ### Implementation Details
 
@@ -92,7 +92,7 @@ Copyright (c) 2026 sprantic GmbH
 ```
 
 **4. Icon**
-- Copy existing `assets/adrai.png` to `tools/adts-review-notes/media/icon.png`
+- Copy existing `assets/adrai.png` to `tools/adrai-review-notes/media/icon.png`
 - Verify dimensions meet marketplace requirements (128x128 minimum)
 
 ---
@@ -103,7 +103,7 @@ Copyright (c) 2026 sprantic GmbH
 
 ```gherkin
 Given all marketplace files are in place
-When I run `bun run package` in tools/adts-review-notes/
+When I run `bun run package` in tools/adrai-review-notes/
 Then a .vsix file is created without errors
 ```
 
@@ -158,13 +158,13 @@ After implementation:
 
 1. **Package builds:**
    ```bash
-   cd tools/adts-review-notes
+   cd tools/adrai-review-notes
    bun run package
    ```
 
 2. **Install and test:**
    ```bash
-   code --install-extension adts-review-notes-0.1.0.vsix
+   code --install-extension adrai-review-notes-0.1.0.vsix
    ```
 
 3. **Verify in VS Code:**

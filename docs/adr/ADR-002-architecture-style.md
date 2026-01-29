@@ -32,7 +32,7 @@ The debate system is fundamentally about structured documentation and decision t
 | **ADRs** | `docs/adr/*.md` | Markdown |
 | **Personal Notes** | `~/.adts/review-notes.yaml` | YAML (gitignored) |
 | **CLI Tools** | `tools/` | TypeScript |
-| **VS Code Extension** | `tools/adts-review-notes/` | TypeScript |
+| **VS Code Extension** | `tools/adrai-review-notes/` | TypeScript |
 
 ### Key Architectural Principles
 
@@ -145,7 +145,7 @@ project/
 │   ├── .aide-tracker.md
 │   └── AIDE-NNNN-*.md
 └── tools/
-    └── adts-review-notes/
+    └── adrai-review-notes/
 ```
 
 ### Data Flow

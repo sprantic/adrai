@@ -108,7 +108,7 @@ adrAI aims to structure the validation process in AI-assisted engineering throug
 **Why it matters:** Formal debates have friction. Personal annotations allow capturing thoughts immediately, with selective escalation.
 
 **Success Criteria:**
-- [x] VS Code extension created (`tools/adts-review-notes/`)
+- [x] VS Code extension created (`tools/adrai-review-notes/`)
 - [x] 5 note types (question, uncertainty, concern, bookmark, pre-debate)
 - [x] Multi-location linking implemented
 - [x] Personal storage in `~/.adts/review-notes.yaml`

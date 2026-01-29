@@ -23,7 +23,7 @@ adrAI extends AIDE with a **review-triggered debate system** that:
 
 Before creating formal debates, capture thoughts during review:
 
-1. **Install VS Code extension** from `tools/adts-review-notes/`
+1. **Install VS Code extension** from `tools/adrai-review-notes/`
 2. Press **Ctrl+Shift+N** to add a note at current cursor
 3. Triage notes in the sidebar panel
 4. **Promote to debate** when discussion is warranted

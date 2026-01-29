@@ -26,7 +26,7 @@ This VS Code extension provides:
 ### From Source (Development)
 
 ```bash
-cd tools/adts-review-notes
+cd tools/adrai-review-notes
 bun install
 bun run compile
 ```
@@ -37,7 +37,7 @@ Then press F5 in VS Code to launch Extension Development Host.
 
 ```bash
 bun run package
-code --install-extension adts-review-notes-0.1.0.vsix
+code --install-extension adrai-review-notes-0.1.0.vsix
 ```
 
 ## Usage

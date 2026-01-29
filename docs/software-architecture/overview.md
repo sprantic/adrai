@@ -161,7 +161,7 @@ Based on AIDE values and project constraints:
 ### VS Code Extension Components
 
 ```
-tools/adts-review-notes/
+tools/adrai-review-notes/
 ├── src/
 │   ├── extension.ts        # Entry point, command registration
 │   ├── noteStorage.ts      # YAML persistence layer

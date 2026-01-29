@@ -6,9 +6,9 @@
 assets/aide-blueprint/
 
 # VS Code Extension build artifacts
-tools/adts-review-notes/out/
-tools/adts-review-notes/node_modules/
-tools/adts-review-notes/*.vsix
+tools/adrai-review-notes/out/
+tools/adrai-review-notes/node_modules/
+tools/adrai-review-notes/*.vsix
 
 # Node.js / Bun
 node_modules/

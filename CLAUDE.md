@@ -94,7 +94,7 @@ adrai/
 │   ├── .aide-tracker.md       # AIDE ID allocation
 │   └── AIDE-NNNN-*.md         # Work plans
 └── tools/
-    └── adts-review-notes/     # VS Code extension
+    └── adrai-review-notes/     # VS Code extension
 ```
 
 ---
@@ -133,7 +133,7 @@ AI should:
 
 ### Review Annotations
 
-The VS Code extension (`tools/adts-review-notes/`) supports:
+The VS Code extension (`tools/adrai-review-notes/`) supports:
 - Personal notes during review (`~/.adts/review-notes.yaml`)
 - Promotion to debate when discussion warranted
 - Five note types: question, uncertainty, concern, bookmark, pre-debate

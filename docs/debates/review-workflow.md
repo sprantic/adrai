@@ -14,7 +14,7 @@ How to use personal annotations during artifact review and when to promote them 
 
 **Current state:** People keep text files open in notepad. No structured capture.
 
-**Solution:** VS Code extension `adts-review-notes` with:
+**Solution:** VS Code extension `adrai-review-notes` with:
 - Sidebar panel showing all notes grouped by status/type
 - Keybindings to add notes at current location
 - Multi-location linking (one note → multiple files)
@@ -226,7 +226,7 @@ cp ~/.adts/review-notes.yaml ~/backup/
 
 ## VS Code Extension
 
-See [tools/adts-review-notes/README.md](../../tools/adts-review-notes/README.md) for:
+See [tools/adrai-review-notes/README.md](../../tools/adrai-review-notes/README.md) for:
 - Installation instructions
 - Full command reference
 - Configuration options

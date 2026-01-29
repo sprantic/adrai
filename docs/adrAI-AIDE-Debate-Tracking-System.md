@@ -500,7 +500,7 @@ project/
 ### Phase 1.5: Review Annotation System ✅ COMPLETE
 **Goal:** Personal annotation layer for artifacts during review
 
-- [x] VS Code extension `adts-review-notes` in `tools/adts-review-notes/`
+- [x] VS Code extension `adrai-review-notes` in `tools/adrai-review-notes/`
 - [x] Sidebar panel showing notes grouped by status/type
 - [x] Commands: Add Note, Add Location, Promote to Debate, Resolve
 - [x] Multi-location linking (one note → multiple files)
@@ -572,7 +572,7 @@ project/
 8. **Debate format**: ✅ Full Argdown syntax for technical users
 9. **UI for non-technical users**: ✅ Static site with argument maps + dashboard views
 10. **Collaboration analytics**: ✅ Participation patterns, alignment/conflict, resolution velocity
-11. **Annotation implementation**: ✅ Custom VS Code Extension (tools/adts-review-notes/)
+11. **Annotation implementation**: ✅ Custom VS Code Extension (tools/adrai-review-notes/)
 12. **Note types**: ✅ Five types - question, uncertainty, concern, bookmark, pre-debate
 13. **Annotation storage**: ✅ `~/.adts/review-notes.yaml` (gitignored, personal)
 
