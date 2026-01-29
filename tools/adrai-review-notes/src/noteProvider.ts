@@ -418,9 +418,8 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
-    // Prefix label with small circle for branch indication (● current, ○ other)
-    const branchPrefix = isCurrentBranch ? '● ' : '○ ';
-    const label = branchPrefix + this.truncate(note.content, 48);
+    // No prefix - use strikethrough for other branches
+    const label = this.truncate(note.content, 50);
 
     const item = new NoteTreeItem(
       label,
@@ -473,6 +472,8 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       }
     } else {
       item.contextValue = 'note-other-branch';
+      // Strikethrough for notes from other branches
+      (item as any).deprecated = true;
       // No command - clicking does nothing for other-branch notes
     }
 
