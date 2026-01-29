@@ -2,7 +2,7 @@
   "name": "adrai-review-notes",
   "displayName": "adrAI Review Notes",
   "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
@@ -96,6 +96,56 @@
       {
         "command": "adrai.goToLocation",
         "title": "adrAI: Go to Location"
+      },
+      {
+        "command": "adrai.searchNotes",
+        "title": "adrAI: Search Notes",
+        "icon": "$(search)"
+      },
+      {
+        "command": "adrai.filterByType",
+        "title": "adrAI: Filter by Type",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "adrai.clearFilters",
+        "title": "adrAI: Clear Filters",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "adrai.quickNote",
+        "title": "adrAI: Quick Bookmark Note",
+        "icon": "$(bookmark)"
+      },
+      {
+        "command": "adrai.toggleBranchFilter",
+        "title": "adrAI: Toggle Branch Filter",
+        "icon": "$(git-branch)"
+      },
+      {
+        "command": "adrai.removeLocation",
+        "title": "adrAI: Remove Location",
+        "icon": "$(remove)"
+      },
+      {
+        "command": "adrai.cleanupStaleLocations",
+        "title": "adrAI: Cleanup Stale Locations",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "adrai.resolveSelected",
+        "title": "adrAI: Resolve Selected Notes",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "adrai.deleteSelected",
+        "title": "adrAI: Delete Selected Notes",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "adrai.resolveAllInGroup",
+        "title": "adrAI: Resolve All in Group",
+        "icon": "$(check-all)"
       }
     ],
     "keybindings": [
@@ -115,6 +165,18 @@
         "command": "adrai.showPanel",
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r"
+      },
+      {
+        "command": "adrai.searchNotes",
+        "key": "ctrl+shift+f",
+        "mac": "cmd+shift+f",
+        "when": "view == adraiReviewNotes && focusedView == adraiReviewNotes"
+      },
+      {
+        "command": "adrai.quickNote",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b",
+        "when": "editorTextFocus"
       }
     ],
     "menus": {
@@ -125,9 +187,34 @@
           "group": "navigation"
         },
         {
+          "command": "adrai.searchNotes",
+          "when": "view == adraiReviewNotes",
+          "group": "navigation"
+        },
+        {
+          "command": "adrai.toggleBranchFilter",
+          "when": "view == adraiReviewNotes",
+          "group": "navigation"
+        },
+        {
           "command": "adrai.refreshNotes",
           "when": "view == adraiReviewNotes",
           "group": "navigation"
+        },
+        {
+          "command": "adrai.filterByType",
+          "when": "view == adraiReviewNotes",
+          "group": "filter"
+        },
+        {
+          "command": "adrai.clearFilters",
+          "when": "view == adraiReviewNotes",
+          "group": "filter"
+        },
+        {
+          "command": "adrai.cleanupStaleLocations",
+          "when": "view == adraiReviewNotes",
+          "group": "cleanup"
         }
       ],
       "view/item/context": [
@@ -147,6 +234,11 @@
           "group": "1_actions"
         },
         {
+          "command": "adrai.resolveSelected",
+          "when": "view == adraiReviewNotes && viewItem == note",
+          "group": "1_actions"
+        },
+        {
           "command": "adrai.editNote",
           "when": "view == adraiReviewNotes && viewItem == note",
           "group": "2_edit"
@@ -157,14 +249,54 @@
           "group": "3_delete"
         },
         {
+          "command": "adrai.deleteSelected",
+          "when": "view == adraiReviewNotes && viewItem == note",
+          "group": "3_delete"
+        },
+        {
+          "command": "adrai.editNote",
+          "when": "view == adraiReviewNotes && viewItem == note-other-branch",
+          "group": "2_edit"
+        },
+        {
+          "command": "adrai.deleteNote",
+          "when": "view == adraiReviewNotes && viewItem == note-other-branch",
+          "group": "3_delete"
+        },
+        {
+          "command": "adrai.resolveNote",
+          "when": "view == adraiReviewNotes && viewItem == note-other-branch",
+          "group": "1_actions"
+        },
+        {
           "command": "adrai.goToLocation",
           "when": "view == adraiReviewNotes && viewItem == location",
           "group": "inline"
+        },
+        {
+          "command": "adrai.removeLocation",
+          "when": "view == adraiReviewNotes && viewItem == location",
+          "group": "1_actions"
+        },
+        {
+          "command": "adrai.removeLocation",
+          "when": "view == adraiReviewNotes && viewItem == location-stale",
+          "group": "1_actions"
+        },
+        {
+          "command": "adrai.resolveAllInGroup",
+          "when": "view == adraiReviewNotes && viewItem == group",
+          "group": "1_actions"
         }
       ],
       "editor/context": [
         {
           "command": "adrai.addNote",
+          "group": "adrai",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "adrai.quickNote",
           "group": "adrai",
           "when": "editorTextFocus"
         }
@@ -193,6 +325,11 @@
           "enum": ["status", "type", "file"],
           "default": "status",
           "description": "How to group notes in the panel"
+        },
+        "adrai.branchFilter": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show only notes from the current git branch"
         }
       }
     }

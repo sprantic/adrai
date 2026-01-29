@@ -33,10 +33,11 @@ export function activate(context: vscode.ExtensionContext): void {
     // Initialize tree view provider
     provider = new NoteProvider(storage);
 
-    // Create tree view
+    // Create tree view with multi-select enabled
     const treeView = vscode.window.createTreeView('adraiReviewNotes', {
       treeDataProvider: provider,
-      showCollapseAll: true
+      showCollapseAll: true,
+      canSelectMany: true
     });
     context.subscriptions.push(treeView);
 

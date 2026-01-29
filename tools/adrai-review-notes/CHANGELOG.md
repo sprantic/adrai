@@ -5,6 +5,35 @@ All notable changes to the "adrAI Review Notes" extension will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-01-29
+
+### Added
+
+- **Branch-Aware Notes**: Notes now capture the git branch when created
+  - Notes from other branches show grayed icons with ⊘ prefix
+  - Branch filter toggle to show only current branch notes
+  - Schema migrated from v1.0 to v1.1 (automatic migration)
+- **Search & Filter**: Find notes by content, tags, or file location
+  - `Ctrl+Shift+F` to search when panel focused
+  - Filter by note type
+  - Clear all filters command
+- **Quick Bookmark**: Single-dialog note creation
+  - `Ctrl+Shift+B` creates bookmark with one input
+- **Bulk Operations**: Multi-select and batch actions
+  - Ctrl+Click to select multiple notes
+  - Resolve Selected, Delete Selected commands
+  - Resolve All in Group for group headers
+- **Location Management**: Better control over note locations
+  - Remove Location command in context menu
+  - Stale location detection with warning icons
+  - Cleanup Stale Locations batch command
+- **Multi-Root Workspace Support**: File paths now resolve correctly across all workspace folders
+
+### Fixed
+
+- File navigation in multi-root workspaces
+- Context menus for location items
+
 ## [0.1.7] - 2026-01-29
 
 ### Fixed

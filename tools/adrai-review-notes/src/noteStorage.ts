@@ -15,8 +15,13 @@ import {
   NoteLocation,
   NoteType,
   NoteStatus,
-  DEFAULT_STORAGE
+  DEFAULT_STORAGE,
+  CURRENT_SCHEMA_VERSION
 } from './types';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 /**
  * Manages persistent storage of review notes
@@ -113,12 +118,18 @@ export class NoteStorage {
 
     try {
       const content = fs.readFileSync(this.storagePath, 'utf-8');
-      const data = YAML.parse(content) as ReviewNotesStorage;
+      let data = YAML.parse(content) as ReviewNotesStorage;
 
       // Validate and migrate if needed
       if (!data.version || !data.notes) {
         this.cache = { ...DEFAULT_STORAGE };
         return this.cache;
+      }
+
+      // Migrate from older schema versions
+      if (data.version !== CURRENT_SCHEMA_VERSION) {
+        data = this.migrateSchema(data);
+        this.save(data); // Persist migrated data
       }
 
       this.cache = data;
@@ -284,6 +295,26 @@ export class NoteStorage {
     }
     this.onChangeCallbacks = [];
   }
+
+  /**
+   * Migrate storage schema to current version
+   */
+  private migrateSchema(data: ReviewNotesStorage): ReviewNotesStorage {
+    let version = data.version;
+
+    // Migration from 1.0 to 1.1: Add branch field (null = all branches)
+    if (version === '1.0') {
+      console.log('Migrating review notes schema from 1.0 to 1.1');
+      // Notes without branch field are visible in all branches
+      // No changes needed to notes array - branch field is optional
+      version = '1.1';
+    }
+
+    return {
+      ...data,
+      version: CURRENT_SCHEMA_VERSION
+    };
+  }
 }
 
 /**
@@ -305,7 +336,8 @@ export function createNote(
   content: string,
   type: NoteType,
   locations: NoteLocation[],
-  tags?: string[]
+  tags?: string[],
+  branch?: string
 ): ReviewNote {
   const now = new Date().toISOString();
   return {
@@ -316,8 +348,48 @@ export function createNote(
     created: now,
     updated: now,
     locations,
-    tags
+    tags,
+    branch
   };
+}
+
+/**
+ * Get the current git branch name
+ */
+export async function getCurrentBranch(): Promise<string | undefined> {
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) {
+    return undefined;
+  }
+
+  try {
+    const { stdout } = await execAsync('git rev-parse --abbrev-ref HEAD', {
+      cwd: workspaceFolder.uri.fsPath
+    });
+    return stdout.trim();
+  } catch {
+    // Not a git repository or git not available
+    return undefined;
+  }
+}
+
+/**
+ * Check if a git branch exists
+ */
+export async function branchExists(branchName: string): Promise<boolean> {
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) {
+    return false;
+  }
+
+  try {
+    const { stdout } = await execAsync(`git branch --list "${branchName}"`, {
+      cwd: workspaceFolder.uri.fsPath
+    });
+    return stdout.trim().length > 0;
+  } catch {
+    return false;
+  }
 }
 
 /**

@@ -14,7 +14,7 @@ import {
   NoteStatus,
   NOTE_TYPE_LABELS
 } from './types';
-import { NoteStorage, createNote, getLinePreview } from './noteStorage';
+import { NoteStorage, createNote, getLinePreview, getCurrentBranch, branchExists } from './noteStorage';
 import { NoteProvider, NoteTreeItem } from './noteProvider';
 
 /**
@@ -83,6 +83,74 @@ export function registerCommands(
       goToLocation(location)
     )
   );
+
+  // Search Notes command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.searchNotes', () => searchNotes(provider))
+  );
+
+  // Filter by Type command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.filterByType', () => filterByType(provider))
+  );
+
+  // Clear Filters command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.clearFilters', () => {
+      provider.clearFilters();
+      vscode.window.showInformationMessage('Filters cleared');
+    })
+  );
+
+  // Quick Note command (bookmark)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.quickNote', () => quickNote(storage))
+  );
+
+  // Toggle Branch Filter command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.toggleBranchFilter', () => {
+      const enabled = provider.toggleBranchFilter();
+      vscode.window.showInformationMessage(
+        enabled ? 'Branch filter enabled - showing current branch notes only' : 'Branch filter disabled - showing all notes'
+      );
+    })
+  );
+
+  // Remove Location command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.removeLocation', (item?: NoteTreeItem) =>
+      removeLocation(storage, item)
+    )
+  );
+
+  // Cleanup Stale Locations command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.cleanupStaleLocations', () =>
+      cleanupStaleLocations(storage, provider)
+    )
+  );
+
+  // Resolve Selected command (bulk)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.resolveSelected', (item?: NoteTreeItem, items?: NoteTreeItem[]) =>
+      resolveSelected(storage, items || (item ? [item] : []))
+    )
+  );
+
+  // Delete Selected command (bulk)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.deleteSelected', (item?: NoteTreeItem, items?: NoteTreeItem[]) =>
+      deleteSelected(storage, items || (item ? [item] : []))
+    )
+  );
+
+  // Resolve All in Group command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.resolveAllInGroup', (item?: NoteTreeItem) =>
+      resolveAllInGroup(storage, provider, item)
+    )
+  );
 }
 
 /**
@@ -147,8 +215,11 @@ async function addNote(storage: NoteStorage): Promise<void> {
     preview
   };
 
+  // Get current branch
+  const currentBranch = await getCurrentBranch();
+
   // Create and save note
-  const note = createNote(content.trim(), selectedType.value, [location], tags);
+  const note = createNote(content.trim(), selectedType.value, [location], tags, currentBranch);
   storage.addNote(note);
 
   vscode.window.showInformationMessage(`Review note added: ${truncate(content, 50)}`);
@@ -540,24 +611,40 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
     return;
   }
 
-  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-  if (!workspaceFolder) {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders || workspaceFolders.length === 0) {
     vscode.window.showErrorMessage('No workspace folder open');
     return;
   }
 
-  // Resolve file path
+  // Resolve file path - try each workspace folder for multi-root workspaces
   let filePath = location.file;
-  if (!path.isAbsolute(filePath)) {
-    filePath = path.join(workspaceFolder.uri.fsPath, filePath);
+  let resolvedPath: string | undefined;
+
+  if (path.isAbsolute(filePath)) {
+    resolvedPath = filePath;
+  } else {
+    // Try each workspace folder to find the file
+    for (const folder of workspaceFolders) {
+      const candidatePath = path.join(folder.uri.fsPath, filePath);
+      if (fs.existsSync(candidatePath)) {
+        resolvedPath = candidatePath;
+        break;
+      }
+    }
+
+    // If not found, default to first workspace folder for error message
+    if (!resolvedPath) {
+      resolvedPath = path.join(workspaceFolders[0].uri.fsPath, filePath);
+    }
   }
 
-  if (!fs.existsSync(filePath)) {
+  if (!fs.existsSync(resolvedPath)) {
     vscode.window.showErrorMessage(`File not found: ${location.file}`);
     return;
   }
 
-  const uri = vscode.Uri.file(filePath);
+  const uri = vscode.Uri.file(resolvedPath);
   const document = await vscode.workspace.openTextDocument(uri);
   const editor = await vscode.window.showTextDocument(document);
 
@@ -569,6 +656,272 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
     new vscode.Range(position, position),
     vscode.TextEditorRevealType.InCenter
   );
+}
+
+/**
+ * Search notes by content, tags, or file
+ */
+async function searchNotes(provider: NoteProvider): Promise<void> {
+  const query = await vscode.window.showInputBox({
+    prompt: 'Search notes',
+    placeHolder: 'Enter search term (searches content, tags, and files)'
+  });
+
+  if (query === undefined) {
+    return; // User cancelled
+  }
+
+  if (query === '') {
+    provider.setSearchQuery(undefined);
+    vscode.window.showInformationMessage('Search cleared');
+  } else {
+    provider.setSearchQuery(query);
+    const filterSummary = provider.getFilterSummary();
+    vscode.window.showInformationMessage(`Search applied ${filterSummary}`);
+  }
+}
+
+/**
+ * Filter notes by type
+ */
+async function filterByType(provider: NoteProvider): Promise<void> {
+  const typeItems = [
+    { label: 'All Types', value: undefined, description: 'Show all note types' },
+    ...Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
+      label,
+      value: key as NoteType,
+      description: getTypeDescription(key as NoteType)
+    }))
+  ];
+
+  const selected = await vscode.window.showQuickPick(typeItems, {
+    placeHolder: 'Filter by note type'
+  });
+
+  if (!selected) {
+    return;
+  }
+
+  provider.setTypeFilter(selected.value);
+  if (selected.value) {
+    vscode.window.showInformationMessage(`Filtering by ${selected.label}`);
+  } else {
+    vscode.window.showInformationMessage('Type filter cleared');
+  }
+}
+
+/**
+ * Quick note - create a bookmark with minimal input
+ */
+async function quickNote(storage: NoteStorage): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showWarningMessage('No active editor. Open a file to add a quick note.');
+    return;
+  }
+
+  const content = await vscode.window.showInputBox({
+    prompt: 'Quick bookmark note',
+    placeHolder: 'Enter note content'
+  });
+
+  if (!content) {
+    return;
+  }
+
+  const document = editor.document;
+  const position = editor.selection.active;
+  const preview = await getLinePreview(document.uri.fsPath, position.line + 1);
+
+  const location: NoteLocation = {
+    file: vscode.workspace.asRelativePath(document.uri),
+    line: position.line + 1,
+    preview
+  };
+
+  const currentBranch = await getCurrentBranch();
+  const note = createNote(content.trim(), 'bookmark', [location], undefined, currentBranch);
+  storage.addNote(note);
+
+  vscode.window.showInformationMessage(`Quick bookmark added: ${truncate(content, 40)}`);
+}
+
+/**
+ * Remove a location from a note
+ */
+async function removeLocation(storage: NoteStorage, item?: NoteTreeItem): Promise<void> {
+  if (!item || (item.itemType !== 'location' && item.itemType !== 'location-stale')) {
+    vscode.window.showWarningMessage('Select a location to remove');
+    return;
+  }
+
+  const location = item.data as NoteLocation;
+  const noteId = item.noteId;
+
+  if (!noteId || !location) {
+    vscode.window.showWarningMessage('Invalid location item');
+    return;
+  }
+
+  const note = storage.getNote(noteId);
+  if (!note) {
+    vscode.window.showWarningMessage('Note not found');
+    return;
+  }
+
+  // If this is the last location, warn about note deletion
+  if (note.locations.length === 1) {
+    const confirm = await vscode.window.showWarningMessage(
+      'This is the only location. Removing it will delete the note. Continue?',
+      'Delete Note',
+      'Cancel'
+    );
+
+    if (confirm !== 'Delete Note') {
+      return;
+    }
+  }
+
+  storage.removeLocation(noteId, location.file, location.line);
+  vscode.window.showInformationMessage('Location removed');
+}
+
+/**
+ * Cleanup all stale locations across all notes
+ */
+async function cleanupStaleLocations(storage: NoteStorage, provider: NoteProvider): Promise<void> {
+  const staleLocations = provider.getStaleLocations();
+
+  if (staleLocations.length === 0) {
+    vscode.window.showInformationMessage('No stale locations found');
+    return;
+  }
+
+  const confirm = await vscode.window.showWarningMessage(
+    `Found ${staleLocations.length} stale location(s). Remove them?`,
+    'Remove All',
+    'Cancel'
+  );
+
+  if (confirm !== 'Remove All') {
+    return;
+  }
+
+  let removedCount = 0;
+  for (const { noteId, location } of staleLocations) {
+    try {
+      storage.removeLocation(noteId, location.file, location.line);
+      removedCount++;
+    } catch (error) {
+      console.error('Error removing stale location:', error);
+    }
+  }
+
+  vscode.window.showInformationMessage(`Removed ${removedCount} stale location(s)`);
+}
+
+/**
+ * Resolve multiple selected notes
+ */
+async function resolveSelected(storage: NoteStorage, items: NoteTreeItem[]): Promise<void> {
+  const noteItems = items.filter(item => item.itemType === 'note' && item.noteId);
+
+  if (noteItems.length === 0) {
+    vscode.window.showWarningMessage('No notes selected');
+    return;
+  }
+
+  const confirm = await vscode.window.showInformationMessage(
+    `Resolve ${noteItems.length} note(s)?`,
+    'Resolve All',
+    'Cancel'
+  );
+
+  if (confirm !== 'Resolve All') {
+    return;
+  }
+
+  for (const item of noteItems) {
+    try {
+      storage.updateNote(item.noteId!, { status: 'resolved' });
+    } catch (error) {
+      console.error('Error resolving note:', error);
+    }
+  }
+
+  vscode.window.showInformationMessage(`Resolved ${noteItems.length} note(s)`);
+}
+
+/**
+ * Delete multiple selected notes
+ */
+async function deleteSelected(storage: NoteStorage, items: NoteTreeItem[]): Promise<void> {
+  const noteItems = items.filter(item => item.itemType === 'note' && item.noteId);
+
+  if (noteItems.length === 0) {
+    vscode.window.showWarningMessage('No notes selected');
+    return;
+  }
+
+  const confirm = await vscode.window.showWarningMessage(
+    `Delete ${noteItems.length} note(s)? This cannot be undone.`,
+    'Delete All',
+    'Cancel'
+  );
+
+  if (confirm !== 'Delete All') {
+    return;
+  }
+
+  for (const item of noteItems) {
+    try {
+      storage.deleteNote(item.noteId!);
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
+  }
+
+  vscode.window.showInformationMessage(`Deleted ${noteItems.length} note(s)`);
+}
+
+/**
+ * Resolve all notes in a group
+ */
+async function resolveAllInGroup(storage: NoteStorage, provider: NoteProvider, item?: NoteTreeItem): Promise<void> {
+  if (!item || item.itemType !== 'group') {
+    vscode.window.showWarningMessage('Select a group to resolve all notes');
+    return;
+  }
+
+  // Get all notes - we'll need to filter based on grouping
+  const allNotes = storage.getAllNotes().filter(n => n.status !== 'resolved');
+
+  if (allNotes.length === 0) {
+    vscode.window.showInformationMessage('No notes to resolve');
+    return;
+  }
+
+  const confirm = await vscode.window.showInformationMessage(
+    `Resolve all notes in this group?`,
+    'Resolve All',
+    'Cancel'
+  );
+
+  if (confirm !== 'Resolve All') {
+    return;
+  }
+
+  let resolvedCount = 0;
+  for (const note of allNotes) {
+    try {
+      storage.updateNote(note.id, { status: 'resolved' });
+      resolvedCount++;
+    } catch (error) {
+      console.error('Error resolving note:', error);
+    }
+  }
+
+  vscode.window.showInformationMessage(`Resolved ${resolvedCount} note(s)`);
 }
 
 /**

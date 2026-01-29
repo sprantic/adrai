@@ -59,6 +59,8 @@ export interface ReviewNote {
   tags?: string[];
   /** DEB-NNNN identifier if promoted to debate */
   promoted_to?: string;
+  /** Git branch when note was created (null/undefined = visible in all branches) */
+  branch?: string;
 }
 
 /**
@@ -131,6 +133,11 @@ export const STATUS_LABELS: Record<NoteStatus, string> = {
  * Default empty storage structure
  */
 export const DEFAULT_STORAGE: ReviewNotesStorage = {
-  version: '1.0',
+  version: '1.1',
   notes: []
 };
+
+/**
+ * Current schema version
+ */
+export const CURRENT_SCHEMA_VERSION = '1.1';
