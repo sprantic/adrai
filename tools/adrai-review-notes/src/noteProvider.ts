@@ -422,10 +422,13 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     item.description = description;
 
-    // Style notes based on branch
+    // Style notes based on branch with color indicators
     if (isCurrentBranch) {
-      // Current branch: normal icon, context allows all actions
-      item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
+      // Current branch: GREEN icon, context allows all actions
+      item.iconPath = new vscode.ThemeIcon(
+        NOTE_TYPE_ICONS[note.type],
+        new vscode.ThemeColor('charts.green')
+      );
       item.contextValue = 'note';
 
       // If single location, make clickable
@@ -437,10 +440,10 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
         };
       }
     } else {
-      // Other branch: grayed out icon, limited context actions, no navigation
+      // Other branch: RED icon, limited context actions, no navigation
       item.iconPath = new vscode.ThemeIcon(
         NOTE_TYPE_ICONS[note.type],
-        new vscode.ThemeColor('disabledForeground')
+        new vscode.ThemeColor('charts.red')
       );
       item.contextValue = 'note-other-branch';
       // No command - clicking does nothing for other-branch notes
