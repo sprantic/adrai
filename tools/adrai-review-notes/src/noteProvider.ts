@@ -418,9 +418,8 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
-    // Prefix label with colored circle emoji for branch indication
-    const branchPrefix = isCurrentBranch ? '🟢 ' : '🔴 ';
-    const label = branchPrefix + this.truncate(note.content, 48);
+    // Simple label with note content
+    const label = this.truncate(note.content, 50);
 
     const item = new NoteTreeItem(
       label,
@@ -436,28 +435,29 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     item.tooltip = this.createNoteTooltip(note);
 
     // Build description parts
-    let description = '';
+    const descParts: string[] = [];
 
-    // Show branch badge for notes from other branches
+    // Show branch badge for notes from other branches (subtle indicator)
     if (!isCurrentBranch && note.branch) {
-      description = `[${note.branch}] `;
-    }
-
-    // Show primary location as description
-    if (note.locations.length > 0) {
-      const loc = note.locations[0];
-      description += `${path.basename(loc.file)}:${loc.line}`;
-      if (note.locations.length > 1) {
-        description += ` (+${note.locations.length - 1})`;
-      }
+      descParts.push(`⊘ ${note.branch}`);
     }
 
     // Show promoted status
     if (note.promoted_to) {
-      description = `[${note.promoted_to}] ` + description;
+      descParts.push(`→ ${note.promoted_to}`);
     }
 
-    item.description = description;
+    // Show primary location
+    if (note.locations.length > 0) {
+      const loc = note.locations[0];
+      let locStr = `${path.basename(loc.file)}:${loc.line}`;
+      if (note.locations.length > 1) {
+        locStr += ` (+${note.locations.length - 1})`;
+      }
+      descParts.push(locStr);
+    }
+
+    item.description = descParts.join(' • ');
 
     // Set context and navigation based on branch
     if (isCurrentBranch) {
@@ -515,31 +515,23 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
    */
   private getLocations(note: ReviewNote): NoteTreeItem[] {
     return note.locations.map((loc, index) => {
-      const isStale = this.isLocationStale(loc);
-
       const item = new NoteTreeItem(
         `${path.basename(loc.file)}:${loc.line}`,
         vscode.TreeItemCollapsibleState.None,
-        isStale ? 'location-stale' : 'location',
+        'location',
         loc,
         note.id
       );
 
-      if (isStale) {
-        item.iconPath = new vscode.ThemeIcon('warning', new vscode.ThemeColor('editorWarning.foreground'));
-        item.description = '(file not found)';
-        item.tooltip = `File not found: ${loc.file}`;
-      } else {
-        item.iconPath = new vscode.ThemeIcon('go-to-file');
-        item.description = loc.section || loc.preview || '';
-        item.tooltip = `${loc.file}:${loc.line}${loc.preview ? '\n' + loc.preview : ''}`;
+      item.iconPath = new vscode.ThemeIcon('go-to-file');
+      item.description = loc.section || loc.preview || '';
+      item.tooltip = `${loc.file}:${loc.line}${loc.preview ? '\n' + loc.preview : ''}`;
 
-        item.command = {
-          command: 'adrai.goToLocation',
-          title: 'Go to Location',
-          arguments: [loc]
-        };
-      }
+      item.command = {
+        command: 'adrai.goToLocation',
+        title: 'Go to Location',
+        arguments: [loc]
+      };
 
       return item;
     });
@@ -547,11 +539,12 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
   /**
    * Check if a location's file no longer exists
+   * Used by cleanup command to find files that have been moved/deleted
    */
   private isLocationStale(location: NoteLocation): boolean {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
-      return false;
+      return false; // Can't determine staleness without workspace
     }
 
     const filePath = location.file;
