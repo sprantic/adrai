@@ -213,4 +213,4 @@ See the adrAI project documentation for the full system design.
 
 ## License
 
-MIT
+MIT (c) 2026 sprantic GmbH

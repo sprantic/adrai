@@ -8,6 +8,10 @@
     "name": "sprantic"
   },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sprantic/adrai"
+  },
   "icon": "media/icon.png",
   "galleryBanner": {
     "color": "#1e3a5f",

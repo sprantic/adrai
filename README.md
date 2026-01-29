@@ -13,7 +13,7 @@ AI-assisted engineering has dramatically increased development velocity, but hum
 
 ## The Solution
 
-adrAI extends [AIDE methodology](https://github.com/danielmiessler/aide) with:
+adrAI extends AIDE with:
 
 - **Review-triggered debates** with 7-gate escalation criteria
 - **Artifact lineage** answering "why does this exist?" at a glance
@@ -117,5 +117,5 @@ MIT
 
 ## Related
 
-- [AIDE Methodology](https://github.com/danielmiessler/aide) — AI-Driven Engineering
+- AIDE Methodology - tbd
 - [Argdown](https://argdown.org/) — Structured argumentation syntax
