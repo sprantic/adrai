@@ -85,6 +85,30 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     // Get current branch
     this.updateCurrentBranch();
+
+    // Watch for git branch changes by monitoring .git/HEAD
+    this.setupGitBranchWatcher();
+  }
+
+  /**
+   * Set up watcher for git branch changes
+   */
+  private setupGitBranchWatcher(): void {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) return;
+
+    for (const folder of workspaceFolders) {
+      const gitHeadPath = path.join(folder.uri.fsPath, '.git', 'HEAD');
+      if (fs.existsSync(gitHeadPath)) {
+        const watcher = fs.watch(path.dirname(gitHeadPath), (eventType, filename) => {
+          if (filename === 'HEAD') {
+            this.refresh();
+          }
+        });
+        // Store watcher for cleanup if needed
+        break; // Only watch the first git repo found
+      }
+    }
   }
 
   /**
@@ -524,19 +548,32 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     let filePath = location.file;
 
+    // Strategy 1: Check absolute path
     if (path.isAbsolute(filePath)) {
       return !fs.existsSync(filePath);
     }
 
-    // Try each workspace folder for multi-root workspaces
+    // Strategy 2: Try each workspace folder
     for (const folder of workspaceFolders) {
       const candidatePath = path.join(folder.uri.fsPath, filePath);
       if (fs.existsSync(candidatePath)) {
-        return false; // Found it, not stale
+        return false;
       }
     }
 
-    return true; // Not found in any workspace folder
+    // Strategy 3: Try removing first path segment
+    if (filePath.includes('/')) {
+      const segments = filePath.split('/');
+      const withoutFirst = segments.slice(1).join('/');
+      for (const folder of workspaceFolders) {
+        const candidatePath = path.join(folder.uri.fsPath, withoutFirst);
+        if (fs.existsSync(candidatePath)) {
+          return false;
+        }
+      }
+    }
+
+    return true; // Not found
   }
 
   /**
