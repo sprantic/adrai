@@ -418,8 +418,9 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
-    // Simple label with note content
-    const label = this.truncate(note.content, 50);
+    // Prefix label with colored circle emoji for branch indication
+    const branchPrefix = isCurrentBranch ? '🟢 ' : '🔴 ';
+    const label = branchPrefix + this.truncate(note.content, 48);
 
     const item = new NoteTreeItem(
       label,
@@ -435,29 +436,28 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     item.tooltip = this.createNoteTooltip(note);
 
     // Build description parts
-    const descParts: string[] = [];
+    let description = '';
 
-    // Show branch badge for notes from other branches (subtle indicator)
+    // Show branch badge for notes from other branches
     if (!isCurrentBranch && note.branch) {
-      descParts.push(`⊘ ${note.branch}`);
+      description = `[${note.branch}] `;
+    }
+
+    // Show primary location as description
+    if (note.locations.length > 0) {
+      const loc = note.locations[0];
+      description += `${path.basename(loc.file)}:${loc.line}`;
+      if (note.locations.length > 1) {
+        description += ` (+${note.locations.length - 1})`;
+      }
     }
 
     // Show promoted status
     if (note.promoted_to) {
-      descParts.push(`→ ${note.promoted_to}`);
+      description = `[${note.promoted_to}] ` + description;
     }
 
-    // Show primary location
-    if (note.locations.length > 0) {
-      const loc = note.locations[0];
-      let locStr = `${path.basename(loc.file)}:${loc.line}`;
-      if (note.locations.length > 1) {
-        locStr += ` (+${note.locations.length - 1})`;
-      }
-      descParts.push(locStr);
-    }
-
-    item.description = descParts.join(' • ');
+    item.description = description;
 
     // Set context and navigation based on branch
     if (isCurrentBranch) {
