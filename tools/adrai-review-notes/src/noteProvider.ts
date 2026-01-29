@@ -418,8 +418,8 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
-    // Prefix label with colored circle emoji for branch indication
-    const branchPrefix = isCurrentBranch ? '🟢 ' : '🔴 ';
+    // Prefix label with small circle for branch indication (● current, ○ other)
+    const branchPrefix = isCurrentBranch ? '● ' : '○ ';
     const label = branchPrefix + this.truncate(note.content, 48);
 
     const item = new NoteTreeItem(
