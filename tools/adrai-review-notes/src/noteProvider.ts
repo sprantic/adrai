@@ -418,11 +418,15 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
-    // No prefix - use strikethrough for other branches
-    const label = this.truncate(note.content, 50);
+    // Use TreeItemLabel with strikethrough for other branches
+    const labelText = this.truncate(note.content, 50);
+    const label: vscode.TreeItemLabel = {
+      label: labelText,
+      strikethrough: !isCurrentBranch
+    };
 
     const item = new NoteTreeItem(
-      label,
+      labelText,
       hasMultipleLocations
         ? vscode.TreeItemCollapsibleState.Collapsed
         : vscode.TreeItemCollapsibleState.None,
@@ -431,6 +435,8 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       note.id
     );
 
+    // Set label with strikethrough for other branches
+    item.label = label;
     item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
     item.tooltip = this.createNoteTooltip(note);
 
@@ -472,8 +478,6 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       }
     } else {
       item.contextValue = 'note-other-branch';
-      // Strikethrough for notes from other branches
-      (item as any).deprecated = true;
       // No command - clicking does nothing for other-branch notes
     }
 
