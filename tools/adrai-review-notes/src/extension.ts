@@ -37,19 +37,15 @@ class NoteDecorationProvider implements vscode.FileDecorationProvider {
       return undefined;
     }
 
-    // In show-all mode, color by branch
+    // In show-all mode, only color other-branch notes red
     if (branchFlag === 'other') {
       return {
         color: new vscode.ThemeColor('adrai.otherBranchForeground'),
         tooltip: 'Note from another branch'
       };
-    } else if (branchFlag === 'current') {
-      return {
-        color: new vscode.ThemeColor('adrai.currentBranchForeground'),
-        tooltip: 'Note from current branch'
-      };
     }
 
+    // Current branch notes get no coloring (default text)
     return undefined;
   }
 }
