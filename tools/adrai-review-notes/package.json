@@ -2,7 +2,7 @@
   "name": "adrai-review-notes",
   "displayName": "adrAI Review Notes",
   "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
@@ -56,95 +56,114 @@
     "commands": [
       {
         "command": "adrai.addNote",
-        "title": "adrAI: Add Review Note",
+        "title": "Add Review Note",
+        "category": "adrAI",
         "icon": "$(add)"
       },
       {
         "command": "adrai.addLocation",
-        "title": "adrAI: Add Location to Note",
+        "title": "Add Location to Note",
+        "category": "adrAI",
         "icon": "$(link)"
       },
       {
         "command": "adrai.showPanel",
-        "title": "adrAI: Toggle Review Notes Panel"
+        "title": "Toggle Review Notes Panel",
+        "category": "adrAI"
       },
       {
         "command": "adrai.promoteToDebate",
-        "title": "adrAI: Promote to Debate",
+        "title": "Promote to Debate",
+        "category": "adrAI",
         "icon": "$(rocket)"
       },
       {
         "command": "adrai.resolveNote",
-        "title": "adrAI: Resolve Note",
+        "title": "Resolve Note",
+        "category": "adrAI",
         "icon": "$(check)"
       },
       {
         "command": "adrai.editNote",
-        "title": "adrAI: Edit Note",
+        "title": "Edit Note",
+        "category": "adrAI",
         "icon": "$(edit)"
       },
       {
         "command": "adrai.deleteNote",
-        "title": "adrAI: Delete Note",
+        "title": "Delete Note",
+        "category": "adrAI",
         "icon": "$(trash)"
       },
       {
         "command": "adrai.refreshNotes",
-        "title": "adrAI: Refresh Notes",
+        "title": "Refresh Notes",
+        "category": "adrAI",
         "icon": "$(refresh)"
       },
       {
         "command": "adrai.goToLocation",
-        "title": "adrAI: Go to Location"
+        "title": "Go to Location",
+        "category": "adrAI"
       },
       {
         "command": "adrai.searchNotes",
-        "title": "adrAI: Search Notes",
+        "title": "Search Notes",
+        "category": "adrAI",
         "icon": "$(search)"
       },
       {
         "command": "adrai.filterByType",
-        "title": "adrAI: Filter by Type",
+        "title": "Filter by Type",
+        "category": "adrAI",
         "icon": "$(filter)"
       },
       {
         "command": "adrai.clearFilters",
-        "title": "adrAI: Clear Filters",
+        "title": "Clear Filters",
+        "category": "adrAI",
         "icon": "$(clear-all)"
       },
       {
         "command": "adrai.quickNote",
-        "title": "adrAI: Quick Bookmark Note",
+        "title": "Quick Bookmark Note",
+        "category": "adrAI",
         "icon": "$(bookmark)"
       },
       {
         "command": "adrai.toggleBranchFilter",
-        "title": "adrAI: Toggle Branch Filter",
+        "title": "Toggle Branch Filter",
+        "category": "adrAI",
         "icon": "$(git-branch)"
       },
       {
         "command": "adrai.removeLocation",
-        "title": "adrAI: Remove Location",
+        "title": "Remove Location",
+        "category": "adrAI",
         "icon": "$(remove)"
       },
       {
         "command": "adrai.cleanupStaleLocations",
-        "title": "adrAI: Cleanup Stale Locations",
+        "title": "Cleanup Stale Locations",
+        "category": "adrAI",
         "icon": "$(trash)"
       },
       {
         "command": "adrai.resolveSelected",
-        "title": "adrAI: Resolve Selected Notes",
+        "title": "Resolve Selected Notes",
+        "category": "adrAI",
         "icon": "$(check-all)"
       },
       {
         "command": "adrai.deleteSelected",
-        "title": "adrAI: Delete Selected Notes",
+        "title": "Delete Selected Notes",
+        "category": "adrAI",
         "icon": "$(trash)"
       },
       {
         "command": "adrai.resolveAllInGroup",
-        "title": "adrAI: Resolve All in Group",
+        "title": "Resolve All in Group",
+        "category": "adrAI",
         "icon": "$(check-all)"
       }
     ],

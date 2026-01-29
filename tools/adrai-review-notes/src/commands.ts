@@ -179,16 +179,47 @@ async function addNote(storage: NoteStorage): Promise<void> {
     return; // User cancelled
   }
 
-  // Get note type
-  const typeItems = Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
-    label,
-    value: key as NoteType,
-    description: getTypeDescription(key as NoteType)
-  }));
+  // Auto-detect note type from punctuation
+  const detectedType = detectNoteType(content);
 
-  const selectedType = await vscode.window.showQuickPick(typeItems, {
-    placeHolder: 'Select note type'
-  });
+  let selectedType: { value: NoteType } | undefined;
+
+  if (detectedType) {
+    // Use detected type with option to override
+    const confirm = await vscode.window.showInformationMessage(
+      `Detected type: ${NOTE_TYPE_LABELS[detectedType]}`,
+      'Use This',
+      'Choose Different'
+    );
+
+    if (confirm === 'Use This') {
+      selectedType = { value: detectedType };
+    } else if (confirm === 'Choose Different') {
+      // Show type picker
+      const typeItems = Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
+        label,
+        value: key as NoteType,
+        description: getTypeDescription(key as NoteType)
+      }));
+
+      selectedType = await vscode.window.showQuickPick(typeItems, {
+        placeHolder: 'Select note type'
+      });
+    } else {
+      return; // User cancelled
+    }
+  } else {
+    // No detection, show type picker
+    const typeItems = Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
+      label,
+      value: key as NoteType,
+      description: getTypeDescription(key as NoteType)
+    }));
+
+    selectedType = await vscode.window.showQuickPick(typeItems, {
+      placeHolder: 'Select note type'
+    });
+  }
 
   if (!selectedType) {
     return; // User cancelled
@@ -685,9 +716,18 @@ async function searchNotes(provider: NoteProvider): Promise<void> {
     provider.setSearchQuery(undefined);
     vscode.window.showInformationMessage('Search cleared');
   } else {
-    provider.setSearchQuery(query);
-    const filterSummary = provider.getFilterSummary();
-    vscode.window.showInformationMessage(`Search applied ${filterSummary}`);
+    // Try the search and check if it finds anything
+    const resultCount = provider.trySearchQuery(query);
+
+    if (resultCount === 0) {
+      // No results - keep current list, inform user
+      vscode.window.showWarningMessage(`No notes found matching "${query}" - list unchanged`);
+    } else {
+      // Results found - apply the search
+      provider.setSearchQuery(query);
+      const filterSummary = provider.getFilterSummary();
+      vscode.window.showInformationMessage(`Found ${resultCount} note(s) ${filterSummary}`);
+    }
   }
 }
 
@@ -721,7 +761,7 @@ async function filterByType(provider: NoteProvider): Promise<void> {
 }
 
 /**
- * Quick note - create a bookmark with minimal input
+ * Quick note - create a note with auto-detected type (defaults to bookmark)
  */
 async function quickNote(storage: NoteStorage): Promise<void> {
   const editor = vscode.window.activeTextEditor;
@@ -731,13 +771,16 @@ async function quickNote(storage: NoteStorage): Promise<void> {
   }
 
   const content = await vscode.window.showInputBox({
-    prompt: 'Quick bookmark note',
+    prompt: 'Quick note (type detected from punctuation: ? ! ~ !!)',
     placeHolder: 'Enter note content'
   });
 
   if (!content) {
     return;
   }
+
+  // Auto-detect type, default to bookmark
+  const noteType = detectNoteType(content) || 'bookmark';
 
   const document = editor.document;
   const position = editor.selection.active;
@@ -750,10 +793,10 @@ async function quickNote(storage: NoteStorage): Promise<void> {
   };
 
   const currentBranch = await getCurrentBranch();
-  const note = createNote(content.trim(), 'bookmark', [location], undefined, currentBranch);
+  const note = createNote(content.trim(), noteType, [location], undefined, currentBranch);
   storage.addNote(note);
 
-  vscode.window.showInformationMessage(`Quick bookmark added: ${truncate(content, 40)}`);
+  vscode.window.showInformationMessage(`${NOTE_TYPE_LABELS[noteType]} added: ${truncate(content, 40)}`);
 }
 
 /**
@@ -932,6 +975,44 @@ async function resolveAllInGroup(storage: NoteStorage, provider: NoteProvider, i
   }
 
   vscode.window.showInformationMessage(`Resolved ${resolvedCount} note(s)`);
+}
+
+/**
+ * Detect note type from content punctuation
+ * Rules:
+ *   - `!!` at end → Pre-debate
+ *   - `?` at end → Question
+ *   - `!` at end → Concern
+ *   - `~` at end → Uncertainty
+ *   - `.` at end or no special punctuation → Bookmark
+ */
+function detectNoteType(content: string): NoteType | undefined {
+  const trimmed = content.trim();
+
+  // Check for !! first (pre-debate) - must be before single !
+  if (trimmed.endsWith('!!')) {
+    return 'pre-debate';
+  }
+
+  // Check ending punctuation
+  if (trimmed.endsWith('?')) {
+    return 'question';
+  }
+
+  if (trimmed.endsWith('!')) {
+    return 'concern';
+  }
+
+  if (trimmed.endsWith('~')) {
+    return 'uncertainty';
+  }
+
+  // Default to bookmark for . or no punctuation
+  if (trimmed.endsWith('.') || /[a-zA-Z0-9]$/.test(trimmed)) {
+    return 'bookmark';
+  }
+
+  return undefined; // Let user choose
 }
 
 /**

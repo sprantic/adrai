@@ -110,6 +110,38 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
   }
 
   /**
+   * Try a search query without applying it - returns count of matching notes
+   * Used for graceful degradation when search finds nothing
+   */
+  trySearchQuery(query: string): number {
+    let notes = this.storage.getAllNotes();
+    const lowerQuery = query.toLowerCase();
+
+    notes = notes.filter(note =>
+      note.content.toLowerCase().includes(lowerQuery) ||
+      note.tags?.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
+      note.locations.some(loc =>
+        loc.file.toLowerCase().includes(lowerQuery) ||
+        loc.preview?.toLowerCase().includes(lowerQuery)
+      )
+    );
+
+    // Also apply current type filter if set
+    if (this.filterState.typeFilter) {
+      notes = notes.filter(note => note.type === this.filterState.typeFilter);
+    }
+
+    // Also apply branch filter if enabled
+    if (this.filterState.branchFilterEnabled && this.currentBranch) {
+      notes = notes.filter(note =>
+        !note.branch || note.branch === this.currentBranch
+      );
+    }
+
+    return notes.length;
+  }
+
+  /**
    * Set type filter
    */
   setTypeFilter(type: NoteType | undefined): void {
