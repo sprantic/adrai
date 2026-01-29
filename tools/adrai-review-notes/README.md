@@ -106,10 +106,10 @@ In VS Code settings (`settings.json`):
 
 ```json
 {
-  "adts.storageLocation": "~/.adrai/review-notes.yaml",
-  "adts.debateTemplateDir": "docs/debates/templates",
-  "adts.debatesDir": "docs/debates",
-  "adts.groupBy": "status"
+  "adrai.storageLocation": "~/.adrai/review-notes.yaml",
+  "adrai.debateTemplateDir": "docs/debates/templates",
+  "adrai.debatesDir": "docs/debates",
+  "adrai.groupBy": "status"
 }
 ```
 

@@ -49,15 +49,15 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     // Listen for config changes
     vscode.workspace.onDidChangeConfiguration(e => {
-      if (e.affectsConfiguration('adts.groupBy')) {
-        const config = vscode.workspace.getConfiguration('adts');
+      if (e.affectsConfiguration('adrai.groupBy')) {
+        const config = vscode.workspace.getConfiguration('adrai');
         this.groupBy = config.get<'status' | 'type' | 'file'>('groupBy', 'status');
         this.refresh();
       }
     });
 
     // Load initial config
-    const config = vscode.workspace.getConfiguration('adts');
+    const config = vscode.workspace.getConfiguration('adrai');
     this.groupBy = config.get<'status' | 'type' | 'file'>('groupBy', 'status');
   }
 
@@ -253,7 +253,7 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     // If single location, make the item clickable
     if (note.locations.length === 1) {
       item.command = {
-        command: 'adts.goToLocation',
+        command: 'adrai.goToLocation',
         title: 'Go to Location',
         arguments: [note.locations[0]]
       };
@@ -325,7 +325,7 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       item.tooltip = `${loc.file}:${loc.line}${loc.preview ? '\n' + loc.preview : ''}`;
 
       item.command = {
-        command: 'adts.goToLocation',
+        command: 'adrai.goToLocation',
         title: 'Go to Location',
         arguments: [loc]
       };

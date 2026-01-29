@@ -37,7 +37,7 @@ export class NoteStorage {
    * Resolve the storage path from config, expanding ~ to home directory
    */
   private resolveStoragePath(): string {
-    const config = vscode.workspace.getConfiguration('adts');
+    const config = vscode.workspace.getConfiguration('adrai');
     let storagePath = config.get<string>('storageLocation', '~/.adrai/review-notes.yaml');
 
     // Expand ~ to home directory

@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext): void {
   provider = new NoteProvider(storage);
 
   // Create tree view
-  const treeView = vscode.window.createTreeView('adtsReviewNotes', {
+  const treeView = vscode.window.createTreeView('adraiReviewNotes', {
     treeDataProvider: provider,
     showCollapseAll: true
   });
@@ -43,7 +43,7 @@ export function activate(context: vscode.ExtensionContext): void {
   registerCommands(context, storage, provider);
 
   // Show welcome message on first use
-  const hasShownWelcome = context.globalState.get<boolean>('adts.shownWelcome');
+  const hasShownWelcome = context.globalState.get<boolean>('adrai.shownWelcome');
   if (!hasShownWelcome) {
     showWelcomeMessage(context);
   }
@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.StatusBarAlignment.Left,
     100
   );
-  statusBarItem.command = 'adts.showPanel';
+  statusBarItem.command = 'adrai.showPanel';
   updateStatusBar(statusBarItem, storage);
   statusBarItem.show();
   context.subscriptions.push(statusBarItem);
@@ -98,8 +98,8 @@ async function showWelcomeMessage(context: vscode.ExtensionContext): Promise<voi
   );
 
   if (action === 'Show Panel') {
-    vscode.commands.executeCommand('adtsReviewNotes.focus');
+    vscode.commands.executeCommand('adraiReviewNotes.focus');
   }
 
-  context.globalState.update('adts.shownWelcome', true);
+  context.globalState.update('adrai.shownWelcome', true);
 }

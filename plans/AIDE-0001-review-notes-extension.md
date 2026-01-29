@@ -61,13 +61,13 @@ VS Code extension providing:
 ### Features Implemented
 
 **Commands:**
-- `adts.addNote` (Ctrl+Shift+N): Add note at cursor
-- `adts.addLocation` (Ctrl+Shift+L): Add location to existing note
-- `adts.showPanel` (Ctrl+Shift+R): Toggle sidebar panel
-- `adts.promoteToDebate`: Convert note to formal debate
-- `adts.resolveNote`: Mark note as resolved
-- `adts.editNote`: Edit note content
-- `adts.deleteNote`: Remove note
+- `adrai.addNote` (Ctrl+Shift+N): Add note at cursor
+- `adrai.addLocation` (Ctrl+Shift+L): Add location to existing note
+- `adrai.showPanel` (Ctrl+Shift+R): Toggle sidebar panel
+- `adrai.promoteToDebate`: Convert note to formal debate
+- `adrai.resolveNote`: Mark note as resolved
+- `adrai.editNote`: Edit note content
+- `adrai.deleteNote`: Remove note
 
 **Note Types:**
 - `question`: Uncertainty about intent or correctness

@@ -35,16 +35,16 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "adts-review-notes",
+          "id": "adrai-review-notes",
           "title": "Review Notes",
           "icon": "media/icons/review-notes.svg"
         }
       ]
     },
     "views": {
-      "adts-review-notes": [
+      "adrai-review-notes": [
         {
-          "id": "adtsReviewNotes",
+          "id": "adraiReviewNotes",
           "name": "Review Notes",
           "icon": "media/icons/review-notes.svg",
           "contextualTitle": "adrAI Review Notes"
@@ -53,64 +53,64 @@
     },
     "commands": [
       {
-        "command": "adts.addNote",
+        "command": "adrai.addNote",
         "title": "adrAI: Add Review Note",
         "icon": "$(add)"
       },
       {
-        "command": "adts.addLocation",
+        "command": "adrai.addLocation",
         "title": "adrAI: Add Location to Note",
         "icon": "$(link)"
       },
       {
-        "command": "adts.showPanel",
+        "command": "adrai.showPanel",
         "title": "adrAI: Toggle Review Notes Panel"
       },
       {
-        "command": "adts.promoteToDebate",
+        "command": "adrai.promoteToDebate",
         "title": "adrAI: Promote to Debate",
         "icon": "$(rocket)"
       },
       {
-        "command": "adts.resolveNote",
+        "command": "adrai.resolveNote",
         "title": "adrAI: Resolve Note",
         "icon": "$(check)"
       },
       {
-        "command": "adts.editNote",
+        "command": "adrai.editNote",
         "title": "adrAI: Edit Note",
         "icon": "$(edit)"
       },
       {
-        "command": "adts.deleteNote",
+        "command": "adrai.deleteNote",
         "title": "adrAI: Delete Note",
         "icon": "$(trash)"
       },
       {
-        "command": "adts.refreshNotes",
+        "command": "adrai.refreshNotes",
         "title": "adrAI: Refresh Notes",
         "icon": "$(refresh)"
       },
       {
-        "command": "adts.goToLocation",
+        "command": "adrai.goToLocation",
         "title": "adrAI: Go to Location"
       }
     ],
     "keybindings": [
       {
-        "command": "adts.addNote",
+        "command": "adrai.addNote",
         "key": "ctrl+shift+n",
         "mac": "cmd+shift+n",
         "when": "editorTextFocus"
       },
       {
-        "command": "adts.addLocation",
+        "command": "adrai.addLocation",
         "key": "ctrl+shift+l",
         "mac": "cmd+shift+l",
         "when": "editorTextFocus"
       },
       {
-        "command": "adts.showPanel",
+        "command": "adrai.showPanel",
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r"
       }
@@ -118,52 +118,52 @@
     "menus": {
       "view/title": [
         {
-          "command": "adts.addNote",
-          "when": "view == adtsReviewNotes",
+          "command": "adrai.addNote",
+          "when": "view == adraiReviewNotes",
           "group": "navigation"
         },
         {
-          "command": "adts.refreshNotes",
-          "when": "view == adtsReviewNotes",
+          "command": "adrai.refreshNotes",
+          "when": "view == adraiReviewNotes",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "adts.addLocation",
-          "when": "view == adtsReviewNotes && viewItem == note",
+          "command": "adrai.addLocation",
+          "when": "view == adraiReviewNotes && viewItem == note",
           "group": "inline"
         },
         {
-          "command": "adts.promoteToDebate",
-          "when": "view == adtsReviewNotes && viewItem == note",
+          "command": "adrai.promoteToDebate",
+          "when": "view == adraiReviewNotes && viewItem == note",
           "group": "1_actions"
         },
         {
-          "command": "adts.resolveNote",
-          "when": "view == adtsReviewNotes && viewItem == note",
+          "command": "adrai.resolveNote",
+          "when": "view == adraiReviewNotes && viewItem == note",
           "group": "1_actions"
         },
         {
-          "command": "adts.editNote",
-          "when": "view == adtsReviewNotes && viewItem == note",
+          "command": "adrai.editNote",
+          "when": "view == adraiReviewNotes && viewItem == note",
           "group": "2_edit"
         },
         {
-          "command": "adts.deleteNote",
-          "when": "view == adtsReviewNotes && viewItem == note",
+          "command": "adrai.deleteNote",
+          "when": "view == adraiReviewNotes && viewItem == note",
           "group": "3_delete"
         },
         {
-          "command": "adts.goToLocation",
-          "when": "view == adtsReviewNotes && viewItem == location",
+          "command": "adrai.goToLocation",
+          "when": "view == adraiReviewNotes && viewItem == location",
           "group": "inline"
         }
       ],
       "editor/context": [
         {
-          "command": "adts.addNote",
-          "group": "adts",
+          "command": "adrai.addNote",
+          "group": "adrai",
           "when": "editorTextFocus"
         }
       ]
@@ -171,22 +171,22 @@
     "configuration": {
       "title": "adrAI Review Notes",
       "properties": {
-        "adts.storageLocation": {
+        "adrai.storageLocation": {
           "type": "string",
           "default": "~/.adrai/review-notes.yaml",
           "description": "Path to the review notes YAML file"
         },
-        "adts.debateTemplateDir": {
+        "adrai.debateTemplateDir": {
           "type": "string",
           "default": "docs/debates/templates",
           "description": "Path to debate templates directory relative to workspace"
         },
-        "adts.debatesDir": {
+        "adrai.debatesDir": {
           "type": "string",
           "default": "docs/debates",
           "description": "Path to debates directory relative to workspace"
         },
-        "adts.groupBy": {
+        "adrai.groupBy": {
           "type": "string",
           "enum": ["status", "type", "file"],
           "default": "status",

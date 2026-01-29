@@ -27,59 +27,59 @@ export function registerCommands(
 ): void {
   // Add Note command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.addNote', () => addNote(storage))
+    vscode.commands.registerCommand('adrai.addNote', () => addNote(storage))
   );
 
   // Add Location command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.addLocation', (item?: NoteTreeItem) =>
+    vscode.commands.registerCommand('adrai.addLocation', (item?: NoteTreeItem) =>
       addLocation(storage, item)
     )
   );
 
   // Show Panel command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.showPanel', () => {
-      vscode.commands.executeCommand('adtsReviewNotes.focus');
+    vscode.commands.registerCommand('adrai.showPanel', () => {
+      vscode.commands.executeCommand('adraiReviewNotes.focus');
     })
   );
 
   // Promote to Debate command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.promoteToDebate', (item?: NoteTreeItem) =>
+    vscode.commands.registerCommand('adrai.promoteToDebate', (item?: NoteTreeItem) =>
       promoteToDebate(storage, item)
     )
   );
 
   // Resolve Note command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.resolveNote', (item?: NoteTreeItem) =>
+    vscode.commands.registerCommand('adrai.resolveNote', (item?: NoteTreeItem) =>
       resolveNote(storage, item)
     )
   );
 
   // Edit Note command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.editNote', (item?: NoteTreeItem) =>
+    vscode.commands.registerCommand('adrai.editNote', (item?: NoteTreeItem) =>
       editNote(storage, item)
     )
   );
 
   // Delete Note command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.deleteNote', (item?: NoteTreeItem) =>
+    vscode.commands.registerCommand('adrai.deleteNote', (item?: NoteTreeItem) =>
       deleteNote(storage, item)
     )
   );
 
   // Refresh Notes command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.refreshNotes', () => provider.refresh())
+    vscode.commands.registerCommand('adrai.refreshNotes', () => provider.refresh())
   );
 
   // Go to Location command
   context.subscriptions.push(
-    vscode.commands.registerCommand('adts.goToLocation', (location?: NoteLocation) =>
+    vscode.commands.registerCommand('adrai.goToLocation', (location?: NoteLocation) =>
       goToLocation(location)
     )
   );
@@ -261,7 +261,7 @@ async function promoteToDebate(storage: NoteStorage, item?: NoteTreeItem): Promi
   }
 
   // Get configuration
-  const config = vscode.workspace.getConfiguration('adts');
+  const config = vscode.workspace.getConfiguration('adrai');
   const debatesDir = config.get<string>('debatesDir', 'docs/debates');
   const templateDir = config.get<string>('debateTemplateDir', 'docs/debates/templates');
 
