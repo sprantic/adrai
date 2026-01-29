@@ -48,22 +48,25 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 
 ---
 
-## Phase 2B: Keyboard Improvements
+## Phase 2B: Keyboard Improvements ✅ COMPLETE
 
-### 2B.1 Ctrl-Click for Other-Branch Notes
+### 2B.1 Ctrl-Click for Other-Branch Notes ✅
 - **Note IDs:** f91ccb6c, 0f3168ce
-- **Change:** Disabled notes allow Ctrl-Click to jump to file
-- **Files:** `noteProvider.ts`, `extension.ts`
+- **Change:** All notes (including other-branch) now clickable to jump to file
+- **Files:** `noteProvider.ts`
+- **Implementation:** Removed branch check for click command assignment
 
-### 2B.2 Panel-Focused Shortcuts
+### 2B.2 Panel-Focused Shortcuts ✅
 - **Note ID:** c8194014-bdbd-431d-b8e2-46dcb3296b86
-- **Change:** Ctrl+Shift+N/B create notes at editor cursor even when panel focused
-- **Files:** `package.json` (keybinding contexts), `commands.ts`
+- **Change:** Ctrl+Shift+N/B work from both editor and panel focus
+- **Files:** `package.json` (keybinding contexts)
+- **Implementation:** Changed `when` clause to `editorTextFocus || focusedView == adraiReviewNotes`
 
-### 2B.3 Tag Autocomplete with History
+### 2B.3 Tag Autocomplete with History ✅
 - **Note ID:** 5309e211-85a7-43c9-bf48-977e5f05d6f1
-- **Change:** Show recent tags, Ctrl+arrows to navigate, Ctrl+Space to select
-- **Files:** `commands.ts`, `noteStorage.ts` (tag history)
+- **Change:** Multi-select QuickPick shows existing tags sorted by frequency
+- **Files:** `commands.ts`, `noteStorage.ts`
+- **Implementation:** Added `getAllTags()` method and `promptForTags()` with multi-select + custom option
 
 ---
 
@@ -178,3 +181,4 @@ looks good
 | 1.0 | 2026-01-30 | Initial draft from review notes |
 | 1.1 | 2026-01-30 | Phase 2A complete - v0.3.0 |
 | 1.2 | 2026-01-30 | Added 2C.4 sortable segments from testing feedback |
+| 1.3 | 2026-01-30 | Phase 2B complete - v0.4.0 |

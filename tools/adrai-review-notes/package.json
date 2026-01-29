@@ -2,7 +2,7 @@
   "name": "adrai-review-notes",
   "displayName": "adrAI Review Notes",
   "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-"version": "0.3.4",
+"version": "0.4.0",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
@@ -172,7 +172,7 @@
         "command": "adrai.addNote",
         "key": "ctrl+shift+n",
         "mac": "cmd+shift+n",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus || focusedView == adraiReviewNotes"
       },
       {
         "command": "adrai.addLocation",
@@ -195,7 +195,7 @@
         "command": "adrai.quickNote",
         "key": "ctrl+shift+b",
         "mac": "cmd+shift+b",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus || focusedView == adraiReviewNotes"
       }
     ],
     "menus": {
