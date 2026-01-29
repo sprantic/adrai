@@ -425,12 +425,8 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
-    // Use TreeItemLabel with strikethrough for other branches
-    const labelText = this.truncate(note.content, 50);
-    const label: vscode.TreeItemLabel = {
-      label: labelText,
-      strikethrough: !isCurrentBranch
-    };
+    // Simple label, use icon color to indicate branch
+    const label = this.truncate(note.content, 50);
 
     const item = new NoteTreeItem(
       label,
@@ -441,7 +437,16 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       note,
       note.id
     );
-    item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
+
+    // Use grayed icon for other branches, normal for current
+    if (isCurrentBranch) {
+      item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
+    } else {
+      item.iconPath = new vscode.ThemeIcon(
+        NOTE_TYPE_ICONS[note.type],
+        new vscode.ThemeColor('disabledForeground')
+      );
+    }
     item.tooltip = this.createNoteTooltip(note);
 
     // Build description parts
