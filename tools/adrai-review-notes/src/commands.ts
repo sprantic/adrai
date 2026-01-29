@@ -617,14 +617,17 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
     return;
   }
 
-  // Resolve file path - try each workspace folder for multi-root workspaces
-  let filePath = location.file;
+  // Resolve file path with multiple strategies
+  const filePath = location.file;
   let resolvedPath: string | undefined;
 
-  if (path.isAbsolute(filePath)) {
+  // Strategy 1: Absolute path
+  if (path.isAbsolute(filePath) && fs.existsSync(filePath)) {
     resolvedPath = filePath;
-  } else {
-    // Try each workspace folder to find the file
+  }
+
+  // Strategy 2: Try each workspace folder
+  if (!resolvedPath) {
     for (const folder of workspaceFolders) {
       const candidatePath = path.join(folder.uri.fsPath, filePath);
       if (fs.existsSync(candidatePath)) {
@@ -632,14 +635,21 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
         break;
       }
     }
+  }
 
-    // If not found, default to first workspace folder for error message
-    if (!resolvedPath) {
-      resolvedPath = path.join(workspaceFolders[0].uri.fsPath, filePath);
+  // Strategy 3: Remove first segment (for nested workspace paths like "adrai/plans/...")
+  if (!resolvedPath && filePath.includes('/')) {
+    const withoutFirst = filePath.split('/').slice(1).join('/');
+    for (const folder of workspaceFolders) {
+      const candidatePath = path.join(folder.uri.fsPath, withoutFirst);
+      if (fs.existsSync(candidatePath)) {
+        resolvedPath = candidatePath;
+        break;
+      }
     }
   }
 
-  if (!fs.existsSync(resolvedPath)) {
+  if (!resolvedPath || !fs.existsSync(resolvedPath)) {
     vscode.window.showErrorMessage(`File not found: ${location.file}`);
     return;
   }

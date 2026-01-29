@@ -522,21 +522,33 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       return false;
     }
 
-    let filePath = location.file;
+    const filePath = location.file;
 
-    if (path.isAbsolute(filePath)) {
-      return !fs.existsSync(filePath);
+    // Strategy 1: Absolute path
+    if (path.isAbsolute(filePath) && fs.existsSync(filePath)) {
+      return false;
     }
 
-    // Try each workspace folder for multi-root workspaces
+    // Strategy 2: Try each workspace folder
     for (const folder of workspaceFolders) {
       const candidatePath = path.join(folder.uri.fsPath, filePath);
       if (fs.existsSync(candidatePath)) {
-        return false; // Found it, not stale
+        return false;
       }
     }
 
-    return true; // Not found in any workspace folder
+    // Strategy 3: Remove first segment (for nested workspace paths like "adrai/plans/...")
+    if (filePath.includes('/')) {
+      const withoutFirst = filePath.split('/').slice(1).join('/');
+      for (const folder of workspaceFolders) {
+        const candidatePath = path.join(folder.uri.fsPath, withoutFirst);
+        if (fs.existsSync(candidatePath)) {
+          return false;
+        }
+      }
+    }
+
+    return true; // Not found
   }
 
   /**
