@@ -43,7 +43,7 @@ VS Code extension providing:
 1. Sidebar panel for note management
 2. Commands for adding/editing notes
 3. Multi-location linking (one note → multiple files)
-4. Personal storage in `~/.adts/review-notes.yaml` (gitignored)
+4. Personal storage in `~/.adrai/review-notes.yaml` (gitignored)
 5. Promotion workflow to create `DEB-NNNN` from notes
 
 ### Files Created
@@ -77,7 +77,7 @@ VS Code extension providing:
 - `pre-debate`: Candidate for formal debate
 
 **Storage:**
-- Location: `~/.adts/review-notes.yaml`
+- Location: `~/.adrai/review-notes.yaml`
 - Format: YAML with note objects containing locations array
 - Personal: Gitignored, not shared with team
 

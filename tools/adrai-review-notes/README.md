@@ -18,7 +18,7 @@ This VS Code extension provides:
 - **Sidebar panel** showing all notes grouped by status/type
 - **Quick note creation** at current cursor position
 - **Multi-location linking** (one note → multiple files)
-- **Personal storage** in `~/.adts/review-notes.yaml` (gitignored)
+- **Personal storage** in `~/.adrai/review-notes.yaml` (gitignored)
 - **Promotion workflow** to create DEB-NNNN from notes
 
 ## Installation
@@ -106,7 +106,7 @@ In VS Code settings (`settings.json`):
 
 ```json
 {
-  "adts.storageLocation": "~/.adts/review-notes.yaml",
+  "adts.storageLocation": "~/.adrai/review-notes.yaml",
   "adts.debateTemplateDir": "docs/debates/templates",
   "adts.debatesDir": "docs/debates",
   "adts.groupBy": "status"
@@ -115,7 +115,7 @@ In VS Code settings (`settings.json`):
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `storageLocation` | `~/.adts/review-notes.yaml` | Path to notes YAML file |
+| `storageLocation` | `~/.adrai/review-notes.yaml` | Path to notes YAML file |
 | `debateTemplateDir` | `docs/debates/templates` | Debate templates directory |
 | `debatesDir` | `docs/debates` | Debates directory |
 | `groupBy` | `status` | Group notes by: `status`, `type`, or `file` |

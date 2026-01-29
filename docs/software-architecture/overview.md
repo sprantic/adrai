@@ -82,7 +82,7 @@ Based on AIDE values and project constraints:
    │   ┌─────────────────────────────────────────────────────────────┐  │
    │   │                    File System Layer                         │  │
    │   │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │  │
-   │   │  │ ~/.adts/     │  │  docs/       │  │  plans/      │       │  │
+   │   │  │ ~/.adrai/     │  │  docs/       │  │  plans/      │       │  │
    │   │  │ (personal)   │  │  (debates,   │  │  (AIDE       │       │  │
    │   │  │              │  │   ADRs)      │  │   plans)     │       │  │
    │   │  └──────────────┘  └──────────────┘  └──────────────┘       │  │
@@ -103,7 +103,7 @@ Based on AIDE values and project constraints:
 | VS Code Extension | Personal notes, promotion workflow | TypeScript, VS Code API |
 | CLI Tools | Mesh queries, validation, diagram generation | TypeScript, bun |
 | File System Layer | YAML/MD read/write, path resolution | Node.js fs, yaml package |
-| Personal Storage | Review notes (gitignored) | YAML in `~/.adts/` |
+| Personal Storage | Review notes (gitignored) | YAML in `~/.adrai/` |
 | Repo Storage | Debates, ADRs, plans | Markdown/YAML in repo |
 
 ---
@@ -114,7 +114,7 @@ Based on AIDE values and project constraints:
 
 | Store | Type | Purpose | Owner |
 |-------|------|---------|-------|
-| `~/.adts/review-notes.yaml` | YAML | Personal annotations | Extension |
+| `~/.adrai/review-notes.yaml` | YAML | Personal annotations | Extension |
 | `docs/debates/*.deb.md` | Markdown | Formal debates | Team |
 | `docs/debates/.deb-graph.yaml` | YAML | Dependency mesh | Team |
 | `docs/adr/*.md` | Markdown | Architecture decisions | Team |
@@ -129,7 +129,7 @@ Based on AIDE values and project constraints:
 [VS Code: Add Note (Ctrl+Shift+N)]
          │
          ▼
-[~/.adts/review-notes.yaml]    ← Personal, gitignored
+[~/.adrai/review-notes.yaml]    ← Personal, gitignored
          │
          │ Promote to debate
          ▼

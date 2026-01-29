@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Ctrl+Shift+L` / `Cmd+Shift+L`: Add Location to Note
   - `Ctrl+Shift+R` / `Cmd+Shift+R`: Toggle Review Notes Panel
   - Plus: Promote to Debate, Resolve Note, Edit Note, Delete Note, Refresh Notes
-- **YAML-based Personal Storage**: Notes stored in `~/.adts/review-notes.yaml`
+- **YAML-based Personal Storage**: Notes stored in `~/.adrai/review-notes.yaml`
 - **Status Bar Indicator**: Shows count of open review notes
 - **Context Menu Integration**: Right-click in editor to add notes
 - **Tree View Grouping**: Group notes by status, type, or file

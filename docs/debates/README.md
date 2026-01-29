@@ -53,7 +53,7 @@ docs/debates/
 ├── DEB-NNNN-topic.deb.md      # Active debates
 └── archive/                   # Resolved debates (>90 days)
 
-~/.adts/
+~/.adrai/
 └── review-notes.yaml          # Personal annotations (gitignored)
 ```
 

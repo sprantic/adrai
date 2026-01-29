@@ -30,7 +30,7 @@ The debate system is fundamentally about structured documentation and decision t
 | **Dependency Graph** | `docs/debates/.deb-graph.yaml` | YAML |
 | **AIDE Plans** | `plans/*.md` | Markdown |
 | **ADRs** | `docs/adr/*.md` | Markdown |
-| **Personal Notes** | `~/.adts/review-notes.yaml` | YAML (gitignored) |
+| **Personal Notes** | `~/.adrai/review-notes.yaml` | YAML (gitignored) |
 | **CLI Tools** | `tools/` | TypeScript |
 | **VS Code Extension** | `tools/adrai-review-notes/` | TypeScript |
 
@@ -154,7 +154,7 @@ project/
 [Human reviews artifact]
     │
     ▼
-[VS Code extension captures notes] → ~/.adts/review-notes.yaml
+[VS Code extension captures notes] → ~/.adrai/review-notes.yaml
     │
     ▼
 [Promote to debate] → docs/debates/DEB-NNNN.deb.md

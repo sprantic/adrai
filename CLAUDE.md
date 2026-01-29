@@ -134,7 +134,7 @@ AI should:
 ### Review Annotations
 
 The VS Code extension (`tools/adrai-review-notes/`) supports:
-- Personal notes during review (`~/.adts/review-notes.yaml`)
+- Personal notes during review (`~/.adrai/review-notes.yaml`)
 - Promotion to debate when discussion warranted
 - Five note types: question, uncertainty, concern, bookmark, pre-debate
 

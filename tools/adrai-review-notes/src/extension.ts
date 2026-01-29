@@ -7,7 +7,7 @@
  * - Sidebar panel showing all notes grouped by status/type/file
  * - Quick note creation at current cursor position
  * - Multi-location linking (one note → multiple files)
- * - Personal storage in ~/.adts/review-notes.yaml
+ * - Personal storage in ~/.adrai/review-notes.yaml
  * - Promotion workflow to create DEB-NNNN from notes
  */
 

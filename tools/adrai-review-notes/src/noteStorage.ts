@@ -1,7 +1,7 @@
 /**
  * adrAI Review Notes - Storage Module
  *
- * Handles reading and writing review notes to ~/.adts/review-notes.yaml
+ * Handles reading and writing review notes to ~/.adrai/review-notes.yaml
  */
 
 import * as fs from 'fs';
@@ -38,7 +38,7 @@ export class NoteStorage {
    */
   private resolveStoragePath(): string {
     const config = vscode.workspace.getConfiguration('adts');
-    let storagePath = config.get<string>('storageLocation', '~/.adts/review-notes.yaml');
+    let storagePath = config.get<string>('storageLocation', '~/.adrai/review-notes.yaml');
 
     // Expand ~ to home directory
     if (storagePath.startsWith('~')) {

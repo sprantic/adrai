@@ -173,7 +173,7 @@
       "properties": {
         "adts.storageLocation": {
           "type": "string",
-          "default": "~/.adts/review-notes.yaml",
+          "default": "~/.adrai/review-notes.yaml",
           "description": "Path to the review notes YAML file"
         },
         "adts.debateTemplateDir": {

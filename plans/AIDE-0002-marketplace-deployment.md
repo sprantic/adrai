@@ -71,7 +71,7 @@ Copyright (c) 2026 sprantic GmbH
 - Multi-location note linking
 - Debate promotion workflow (note → DEB-NNNN)
 - 8 commands with keyboard shortcuts
-- YAML-based personal storage (~/.adts/review-notes.yaml)
+- YAML-based personal storage (~/.adrai/review-notes.yaml)
 - Status bar note count indicator
 ```
 

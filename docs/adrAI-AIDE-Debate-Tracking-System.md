@@ -504,7 +504,7 @@ project/
 - [x] Sidebar panel showing notes grouped by status/type
 - [x] Commands: Add Note, Add Location, Promote to Debate, Resolve
 - [x] Multi-location linking (one note → multiple files)
-- [x] Personal storage in `~/.adts/review-notes.yaml` (gitignored)
+- [x] Personal storage in `~/.adrai/review-notes.yaml` (gitignored)
 - [x] Promotion workflow to create DEB-NNNN from notes
 - [x] Documentation in `docs/debates/review-workflow.md`
 
@@ -574,7 +574,7 @@ project/
 10. **Collaboration analytics**: ✅ Participation patterns, alignment/conflict, resolution velocity
 11. **Annotation implementation**: ✅ Custom VS Code Extension (tools/adrai-review-notes/)
 12. **Note types**: ✅ Five types - question, uncertainty, concern, bookmark, pre-debate
-13. **Annotation storage**: ✅ `~/.adts/review-notes.yaml` (gitignored, personal)
+13. **Annotation storage**: ✅ `~/.adrai/review-notes.yaml` (gitignored, personal)
 
 ## Remaining Questions
 

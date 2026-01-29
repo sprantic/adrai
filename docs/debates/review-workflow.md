@@ -18,7 +18,7 @@ How to use personal annotations during artifact review and when to promote them 
 - Sidebar panel showing all notes grouped by status/type
 - Keybindings to add notes at current location
 - Multi-location linking (one note → multiple files)
-- Personal storage in `~/.adts/review-notes.yaml` (gitignored)
+- Personal storage in `~/.adrai/review-notes.yaml` (gitignored)
 - Promotion workflow to create DEB-NNNN from notes
 
 ---
@@ -211,7 +211,7 @@ open → investigating → promote → resolved
 
 ## Storage
 
-Notes are stored locally in `~/.adts/review-notes.yaml`:
+Notes are stored locally in `~/.adrai/review-notes.yaml`:
 
 - **Personal** - Not in version control
 - **Human-readable** - YAML format
@@ -219,7 +219,7 @@ Notes are stored locally in `~/.adts/review-notes.yaml`:
 
 To backup or sync:
 ```bash
-cp ~/.adts/review-notes.yaml ~/backup/
+cp ~/.adrai/review-notes.yaml ~/backup/
 ```
 
 ---

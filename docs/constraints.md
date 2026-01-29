@@ -30,7 +30,7 @@ This document defines the constraints and boundaries that all adrAI work must re
 | Pattern | Requirement | Example |
 |---------|-------------|---------|
 | Data Storage | Repo-first, no external databases | All artifacts in `docs/` and `plans/` |
-| Personal Data | Isolated from repo | `~/.adts/` for personal notes |
+| Personal Data | Isolated from repo | `~/.adrai/` for personal notes |
 | AI Integration | Read/write text files | AI operates on markdown/YAML directly |
 | Version Control | Git-native workflows | Full history for all decisions |
 
@@ -41,7 +41,7 @@ BOUNDARY RULES
 
 ALLOWED:
   - CLI tools reading/writing to docs/ and plans/
-  - VS Code extension reading/writing to ~/.adts/
+  - VS Code extension reading/writing to ~/.adrai/
   - Extension promoting notes to docs/debates/
   - AI reading all repo artifacts
   - AI proposing changes to artifacts
@@ -90,7 +90,7 @@ FORBIDDEN:
 | Dependency Graph | YAML | `docs/debates/.deb-graph.yaml` |
 | Plans | Markdown | `plans/*.md` |
 | ADRs | Markdown | `docs/adr/*.md` |
-| Personal Notes | YAML | `~/.adts/review-notes.yaml` |
+| Personal Notes | YAML | `~/.adrai/review-notes.yaml` |
 
 ### ID Schemes
 
@@ -138,7 +138,7 @@ FORBIDDEN:
 | Branch protection | `main` requires PR |
 | Commit messages | Include AIDE ID for tracked work |
 | No large files | Use `.gitignore` for binaries |
-| Personal data | Never commit `~/.adts/` contents |
+| Personal data | Never commit `~/.adrai/` contents |
 
 ---
 
