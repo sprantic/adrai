@@ -14,6 +14,7 @@ import {
   NoteStatus,
   NOTE_TYPE_ICONS,
   NOTE_TYPE_LABELS,
+  NOTE_TYPES_ORDERED,
   STATUS_ICONS,
   STATUS_LABELS
 } from './types';
@@ -359,13 +360,12 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
   }
 
   /**
-   * Get groups organized by type
+   * Get groups organized by type (ordered by urgency: low to high)
    */
   private getTypeGroups(notes: ReviewNote[]): NoteTreeItem[] {
-    const types: NoteType[] = ['question', 'uncertainty', 'concern', 'bookmark', 'pre-debate'];
     const groups: NoteTreeItem[] = [];
 
-    for (const type of types) {
+    for (const type of NOTE_TYPES_ORDERED) {
       const count = notes.filter(n => n.type === type).length;
       if (count > 0) {
         const item = new NoteTreeItem(

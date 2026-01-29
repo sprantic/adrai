@@ -12,7 +12,8 @@ import {
   NoteLocation,
   NoteType,
   NoteStatus,
-  NOTE_TYPE_LABELS
+  NOTE_TYPE_LABELS,
+  NOTE_TYPES_ORDERED
 } from './types';
 import { NoteStorage, createNote, getLinePreview, getCurrentBranch, branchExists } from './noteStorage';
 import { NoteProvider, NoteTreeItem } from './noteProvider';
@@ -179,50 +180,29 @@ async function addNote(storage: NoteStorage): Promise<void> {
     return; // User cancelled
   }
 
-  // Auto-detect note type from punctuation
+  // Auto-detect note type from punctuation (no confirmation needed)
   const detectedType = detectNoteType(content);
-
-  let selectedType: { value: NoteType } | undefined;
+  let selectedType: { value: NoteType };
 
   if (detectedType) {
-    // Use detected type with option to override
-    const confirm = await vscode.window.showInformationMessage(
-      `Detected type: ${NOTE_TYPE_LABELS[detectedType]}`,
-      'Use This',
-      'Choose Different'
-    );
-
-    if (confirm === 'Use This') {
-      selectedType = { value: detectedType };
-    } else if (confirm === 'Choose Different') {
-      // Show type picker
-      const typeItems = Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
-        label,
-        value: key as NoteType,
-        description: getTypeDescription(key as NoteType)
-      }));
-
-      selectedType = await vscode.window.showQuickPick(typeItems, {
-        placeHolder: 'Select note type'
-      });
-    } else {
-      return; // User cancelled
-    }
+    // Use detected type directly
+    selectedType = { value: detectedType };
   } else {
-    // No detection, show type picker
-    const typeItems = Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
-      label,
-      value: key as NoteType,
-      description: getTypeDescription(key as NoteType)
+    // No detection, show type picker (ordered by urgency)
+    const typeItems = NOTE_TYPES_ORDERED.map(type => ({
+      label: NOTE_TYPE_LABELS[type],
+      value: type,
+      description: getTypeDescription(type)
     }));
 
-    selectedType = await vscode.window.showQuickPick(typeItems, {
+    const picked = await vscode.window.showQuickPick(typeItems, {
       placeHolder: 'Select note type'
     });
-  }
 
-  if (!selectedType) {
-    return; // User cancelled
+    if (!picked) {
+      return; // User cancelled
+    }
+    selectedType = picked;
   }
 
   // Get tags (optional)
@@ -540,12 +520,12 @@ async function editNote(storage: NoteStorage, item?: NoteTreeItem): Promise<void
     return;
   }
 
-  // Edit type
-  const typeItems = Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
-    label,
-    value: key as NoteType,
-    description: getTypeDescription(key as NoteType),
-    picked: key === note!.type
+  // Edit type (ordered by urgency)
+  const typeItems = NOTE_TYPES_ORDERED.map(type => ({
+    label: NOTE_TYPE_LABELS[type],
+    value: type,
+    description: getTypeDescription(type),
+    picked: type === note!.type
   }));
 
   const selectedType = await vscode.window.showQuickPick(typeItems, {
@@ -736,11 +716,11 @@ async function searchNotes(provider: NoteProvider): Promise<void> {
  */
 async function filterByType(provider: NoteProvider): Promise<void> {
   const typeItems = [
-    { label: 'All Types', value: undefined, description: 'Show all note types' },
-    ...Object.entries(NOTE_TYPE_LABELS).map(([key, label]) => ({
-      label,
-      value: key as NoteType,
-      description: getTypeDescription(key as NoteType)
+    { label: 'All Types', value: undefined as NoteType | undefined, description: 'Show all note types' },
+    ...NOTE_TYPES_ORDERED.map(type => ({
+      label: NOTE_TYPE_LABELS[type],
+      value: type as NoteType | undefined,
+      description: getTypeDescription(type)
     }))
   ];
 

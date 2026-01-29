@@ -5,14 +5,25 @@
  */
 
 /**
- * Type of review note - indicates the nature of the annotation
+ * Type of review note - ordered by urgency (low to high)
  */
 export type NoteType =
-  | 'question'      // Need answer/clarification
+  | 'bookmark'      // Come back to this later (lowest urgency)
   | 'uncertainty'   // Not sure yet, need more context
+  | 'question'      // Need answer/clarification
   | 'concern'       // Potential issue to investigate
-  | 'bookmark'      // Come back to this later
-  | 'pre-debate';   // Might warrant formal DEB-NNNN
+  | 'pre-debate';   // Might warrant formal DEB-NNNN (highest urgency)
+
+/**
+ * Note types in urgency order (low to high) - use for UI ordering
+ */
+export const NOTE_TYPES_ORDERED: NoteType[] = [
+  'bookmark',
+  'uncertainty',
+  'question',
+  'concern',
+  'pre-debate'
+];
 
 /**
  * Status of a review note through its lifecycle
@@ -91,10 +102,10 @@ export interface AdtsConfiguration {
  * Icons for each note type (VS Code Codicons)
  */
 export const NOTE_TYPE_ICONS: Record<NoteType, string> = {
-  'question': 'search',
-  'uncertainty': 'question',
-  'concern': 'warning',
   'bookmark': 'bookmark',
+  'uncertainty': 'question',
+  'question': 'search',
+  'concern': 'warning',
   'pre-debate': 'flame'
 };
 
@@ -102,10 +113,10 @@ export const NOTE_TYPE_ICONS: Record<NoteType, string> = {
  * Display labels for note types
  */
 export const NOTE_TYPE_LABELS: Record<NoteType, string> = {
-  'question': 'Question',
-  'uncertainty': 'Uncertainty',
-  'concern': 'Concern',
   'bookmark': 'Bookmark',
+  'uncertainty': 'Uncertainty',
+  'question': 'Question',
+  'concern': 'Concern',
   'pre-debate': 'Pre-debate'
 };
 
