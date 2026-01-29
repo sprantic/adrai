@@ -85,6 +85,38 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     // Get current branch
     this.updateCurrentBranch();
+
+    // Watch for git branch changes via VS Code Git extension API
+    this.setupGitExtensionWatcher();
+  }
+
+  /**
+   * Set up watcher using VS Code Git extension API
+   */
+  private async setupGitExtensionWatcher(): Promise<void> {
+    try {
+      const gitExtension = vscode.extensions.getExtension('vscode.git');
+      if (!gitExtension) return;
+
+      const git = gitExtension.isActive ? gitExtension.exports : await gitExtension.activate();
+      const api = git.getAPI(1);
+
+      if (api.repositories.length > 0) {
+        // Watch for state changes (includes branch switches)
+        api.repositories[0].state.onDidChange(() => {
+          this.refresh();
+        });
+      }
+
+      // Also watch for new repositories
+      api.onDidOpenRepository((repo: any) => {
+        repo.state.onDidChange(() => {
+          this.refresh();
+        });
+      });
+    } catch (error) {
+      console.log('Git extension not available, branch watching disabled');
+    }
   }
 
   /**
