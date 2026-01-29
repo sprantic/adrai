@@ -2,7 +2,7 @@
   "name": "adrai-review-notes",
   "displayName": "adrAI Review Notes",
   "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
@@ -304,12 +304,21 @@
     },
     "colors": [
       {
-        "id": "adrai.otherBranchForeground",
-        "description": "Text color for notes from other branches",
+        "id": "adrai.currentBranchForeground",
+        "description": "Text color for notes from current branch (show-all mode)",
         "defaults": {
-          "dark": "#6b6b6b",
-          "light": "#a0a0a0",
-          "highContrast": "#808080"
+          "dark": "#4ec957",
+          "light": "#2d8f36",
+          "highContrast": "#00ff00"
+        }
+      },
+      {
+        "id": "adrai.otherBranchForeground",
+        "description": "Text color for notes from other branches (show-all mode)",
+        "defaults": {
+          "dark": "#e05050",
+          "light": "#c03030",
+          "highContrast": "#ff0000"
         }
       }
     ],

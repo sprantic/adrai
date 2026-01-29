@@ -439,9 +439,11 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     );
 
     // Set resourceUri for FileDecorationProvider to color text
-    // Use custom scheme with branch info encoded
+    // Encode: scheme://branchFlag.filterMode/noteId
+    // filterMode: 'all' (show all) or 'filtered' (branch filter on)
     const branchFlag = isCurrentBranch ? 'current' : 'other';
-    item.resourceUri = vscode.Uri.parse(`adrai-note://${branchFlag}/${note.id}`);
+    const filterMode = this.filterState.branchFilterEnabled ? 'filtered' : 'all';
+    item.resourceUri = vscode.Uri.parse(`adrai-note://${branchFlag}.${filterMode}/${note.id}`);
 
     item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
     item.tooltip = this.createNoteTooltip(note);

@@ -17,7 +17,10 @@ import { NoteProvider } from './noteProvider';
 import { registerCommands } from './commands';
 
 /**
- * FileDecorationProvider to color notes from other branches
+ * FileDecorationProvider to color notes based on branch
+ * URI format: adrai-note://branchFlag.filterMode/noteId
+ * - branchFlag: 'current' or 'other'
+ * - filterMode: 'all' (show all branches) or 'filtered' (branch filter on)
  */
 class NoteDecorationProvider implements vscode.FileDecorationProvider {
   provideFileDecoration(uri: vscode.Uri): vscode.FileDecoration | undefined {
@@ -26,11 +29,24 @@ class NoteDecorationProvider implements vscode.FileDecorationProvider {
       return undefined;
     }
 
-    // Check if it's from another branch (encoded in authority)
-    if (uri.authority === 'other') {
+    // Parse authority: branchFlag.filterMode
+    const [branchFlag, filterMode] = uri.authority.split('.');
+
+    // If branch filter is on (filtered mode), no coloring needed
+    if (filterMode === 'filtered') {
+      return undefined;
+    }
+
+    // In show-all mode, color by branch
+    if (branchFlag === 'other') {
       return {
         color: new vscode.ThemeColor('adrai.otherBranchForeground'),
         tooltip: 'Note from another branch'
+      };
+    } else if (branchFlag === 'current') {
+      return {
+        color: new vscode.ThemeColor('adrai.currentBranchForeground'),
+        tooltip: 'Note from current branch'
       };
     }
 
