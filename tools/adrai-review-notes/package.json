@@ -2,7 +2,7 @@
   "name": "adrai-review-notes",
   "displayName": "adrAI Review Notes",
   "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
@@ -31,12 +31,7 @@
     "adrAI",
     "AIDE"
   ],
-  "activationEvents": [
-    "onStartupFinished",
-    "onView:adraiReviewNotes",
-    "onCommand:adrai.addNote",
-    "onCommand:adrai.showPanel"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
