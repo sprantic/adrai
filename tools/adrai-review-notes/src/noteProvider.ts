@@ -386,8 +386,12 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
+    // Prefix label with colored circle emoji for branch indication
+    const branchPrefix = isCurrentBranch ? '🟢 ' : '🔴 ';
+    const label = branchPrefix + this.truncate(note.content, 48);
+
     const item = new NoteTreeItem(
-      this.truncate(note.content, 50),
+      label,
       hasMultipleLocations
         ? vscode.TreeItemCollapsibleState.Collapsed
         : vscode.TreeItemCollapsibleState.None,
@@ -396,6 +400,7 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       note.id
     );
 
+    item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
     item.tooltip = this.createNoteTooltip(note);
 
     // Build description parts
@@ -403,7 +408,7 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     // Show branch badge for notes from other branches
     if (!isCurrentBranch && note.branch) {
-      description = `⊘ [${note.branch}] `;
+      description = `[${note.branch}] `;
     }
 
     // Show primary location as description
@@ -422,13 +427,8 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     item.description = description;
 
-    // Style notes based on branch with color indicators
+    // Set context and navigation based on branch
     if (isCurrentBranch) {
-      // Current branch: GREEN icon, context allows all actions
-      item.iconPath = new vscode.ThemeIcon(
-        NOTE_TYPE_ICONS[note.type],
-        new vscode.ThemeColor('charts.green')
-      );
       item.contextValue = 'note';
 
       // If single location, make clickable
@@ -440,11 +440,6 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
         };
       }
     } else {
-      // Other branch: RED icon, limited context actions, no navigation
-      item.iconPath = new vscode.ThemeIcon(
-        NOTE_TYPE_ICONS[note.type],
-        new vscode.ThemeColor('charts.red')
-      );
       item.contextValue = 'note-other-branch';
       // No command - clicking does nothing for other-branch notes
     }

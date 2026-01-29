@@ -2,7 +2,7 @@
   "name": "adrai-review-notes",
   "displayName": "adrAI Review Notes",
   "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
