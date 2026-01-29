@@ -23,45 +23,51 @@ let provider: NoteProvider;
  * Extension activation
  */
 export function activate(context: vscode.ExtensionContext): void {
-  console.log('adrAI Review Notes extension is activating...');
+  try {
+    console.log('adrAI Review Notes extension is activating...');
 
-  // Initialize storage
-  storage = new NoteStorage();
-  context.subscriptions.push({ dispose: () => storage.dispose() });
+    // Initialize storage
+    storage = new NoteStorage();
+    context.subscriptions.push({ dispose: () => storage.dispose() });
 
-  // Initialize tree view provider
-  provider = new NoteProvider(storage);
+    // Initialize tree view provider
+    provider = new NoteProvider(storage);
 
-  // Create tree view
-  const treeView = vscode.window.createTreeView('adraiReviewNotes', {
-    treeDataProvider: provider,
-    showCollapseAll: true
-  });
-  context.subscriptions.push(treeView);
+    // Create tree view
+    const treeView = vscode.window.createTreeView('adraiReviewNotes', {
+      treeDataProvider: provider,
+      showCollapseAll: true
+    });
+    context.subscriptions.push(treeView);
 
-  // Register commands
-  registerCommands(context, storage, provider);
+    // Register commands
+    registerCommands(context, storage, provider);
 
-  // Show welcome message on first use
-  const hasShownWelcome = context.globalState.get<boolean>('adrai.shownWelcome');
-  if (!hasShownWelcome) {
-    showWelcomeMessage(context);
+    // Show welcome message on first use
+    const hasShownWelcome = context.globalState.get<boolean>('adrai.shownWelcome');
+    if (!hasShownWelcome) {
+      showWelcomeMessage(context);
+    }
+
+    // Status bar item showing note count
+    const statusBarItem = vscode.window.createStatusBarItem(
+      vscode.StatusBarAlignment.Left,
+      100
+    );
+    statusBarItem.command = 'adrai.showPanel';
+    updateStatusBar(statusBarItem, storage);
+    statusBarItem.show();
+    context.subscriptions.push(statusBarItem);
+
+    // Update status bar when notes change
+    storage.onChange(() => updateStatusBar(statusBarItem, storage));
+
+    console.log('adrAI Review Notes extension activated');
+    vscode.window.showInformationMessage('adrAI Review Notes activated!');
+  } catch (error) {
+    console.error('adrAI Review Notes activation failed:', error);
+    vscode.window.showErrorMessage(`adrAI Review Notes failed to activate: ${error}`);
   }
-
-  // Status bar item showing note count
-  const statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Left,
-    100
-  );
-  statusBarItem.command = 'adrai.showPanel';
-  updateStatusBar(statusBarItem, storage);
-  statusBarItem.show();
-  context.subscriptions.push(statusBarItem);
-
-  // Update status bar when notes change
-  storage.onChange(() => updateStatusBar(statusBarItem, storage));
-
-  console.log('adrAI Review Notes extension activated');
 }
 
 /**
