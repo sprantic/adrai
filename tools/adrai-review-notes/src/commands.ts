@@ -964,7 +964,7 @@ async function resolveAllInGroup(storage: NoteStorage, provider: NoteProvider, i
  *   - `?` at end → Question
  *   - `!` at end → Concern
  *   - `~` at end → Uncertainty
- *   - `.` at end or no special punctuation → Bookmark
+ *   - No special punctuation → Show type picker (return undefined)
  */
 function detectNoteType(content: string): NoteType | undefined {
   const trimmed = content.trim();
@@ -987,10 +987,7 @@ function detectNoteType(content: string): NoteType | undefined {
     return 'uncertainty';
   }
 
-  // Default to bookmark for . or no punctuation
-  if (trimmed.endsWith('.') || /[a-zA-Z0-9]$/.test(trimmed)) {
-    return 'bookmark';
-  }
+  // No special punctuation - return undefined to show type picker
 
   return undefined; // Let user choose
 }
