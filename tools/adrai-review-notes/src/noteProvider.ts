@@ -85,30 +85,6 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
 
     // Get current branch
     this.updateCurrentBranch();
-
-    // Watch for git branch changes by monitoring .git/HEAD
-    this.setupGitBranchWatcher();
-  }
-
-  /**
-   * Set up watcher for git branch changes
-   */
-  private setupGitBranchWatcher(): void {
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders) return;
-
-    for (const folder of workspaceFolders) {
-      const gitHeadPath = path.join(folder.uri.fsPath, '.git', 'HEAD');
-      if (fs.existsSync(gitHeadPath)) {
-        const watcher = fs.watch(path.dirname(gitHeadPath), (eventType, filename) => {
-          if (filename === 'HEAD') {
-            this.refresh();
-          }
-        });
-        // Store watcher for cleanup if needed
-        break; // Only watch the first git repo found
-      }
-    }
   }
 
   /**
@@ -546,11 +522,11 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       return false;
     }
 
-    let filePath = location.file;
+    const filePath = location.file;
 
-    // Strategy 1: Check absolute path
-    if (path.isAbsolute(filePath)) {
-      return !fs.existsSync(filePath);
+    // Strategy 1: Absolute path
+    if (path.isAbsolute(filePath) && fs.existsSync(filePath)) {
+      return false;
     }
 
     // Strategy 2: Try each workspace folder
@@ -561,10 +537,9 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       }
     }
 
-    // Strategy 3: Try removing first path segment
+    // Strategy 3: Remove first segment (for nested workspace paths like "adrai/plans/...")
     if (filePath.includes('/')) {
-      const segments = filePath.split('/');
-      const withoutFirst = segments.slice(1).join('/');
+      const withoutFirst = filePath.split('/').slice(1).join('/');
       for (const folder of workspaceFolders) {
         const candidatePath = path.join(folder.uri.fsPath, withoutFirst);
         if (fs.existsSync(candidatePath)) {

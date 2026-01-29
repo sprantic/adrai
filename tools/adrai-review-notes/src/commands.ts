@@ -617,11 +617,11 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
     return;
   }
 
-  // Resolve file path - try multiple strategies
-  let filePath = location.file;
+  // Resolve file path with multiple strategies
+  const filePath = location.file;
   let resolvedPath: string | undefined;
 
-  // Strategy 1: Check if absolute path
+  // Strategy 1: Absolute path
   if (path.isAbsolute(filePath) && fs.existsSync(filePath)) {
     resolvedPath = filePath;
   }
@@ -637,30 +637,14 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
     }
   }
 
-  // Strategy 3: Try removing first path segment (in case of nested workspace)
+  // Strategy 3: Remove first segment (for nested workspace paths like "adrai/plans/...")
   if (!resolvedPath && filePath.includes('/')) {
-    const segments = filePath.split('/');
-    const withoutFirst = segments.slice(1).join('/');
+    const withoutFirst = filePath.split('/').slice(1).join('/');
     for (const folder of workspaceFolders) {
       const candidatePath = path.join(folder.uri.fsPath, withoutFirst);
       if (fs.existsSync(candidatePath)) {
         resolvedPath = candidatePath;
         break;
-      }
-    }
-  }
-
-  // Strategy 4: Search for file by name in workspace
-  if (!resolvedPath) {
-    const fileName = path.basename(filePath);
-    const files = await vscode.workspace.findFiles(`**/${fileName}`, '**/node_modules/**', 5);
-    if (files.length === 1) {
-      resolvedPath = files[0].fsPath;
-    } else if (files.length > 1) {
-      // Multiple matches - try to find one that matches the path pattern
-      const matchingFile = files.find(f => f.fsPath.includes(filePath.replace(/\//g, path.sep)));
-      if (matchingFile) {
-        resolvedPath = matchingFile.fsPath;
       }
     }
   }
