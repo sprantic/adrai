@@ -84,6 +84,14 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 - **Change:** Settings to show/hide: note, tags, location, branch, date
 - **Files:** `noteProvider.ts`, `package.json` (settings)
 
+### 2C.4 Sortable Note Segments
+- **Source:** Manual testing (tests.md)
+- **Change:** Notes within each status group sortable by creation date or type (ascending/descending)
+- **Files:** `noteProvider.ts`, `package.json` (settings)
+- **Settings:**
+  - `adrai.sortBy`: "date" | "type" | "urgency"
+  - `adrai.sortOrder`: "asc" | "desc"
+
 ---
 
 ## Phase 2D: Advanced Features
@@ -134,6 +142,7 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 1. Tags display with background colors
 2. Branch filter toggle shows filled icon when active
 3. Settings control what appears in note lines
+4. Notes sortable by date/type/urgency within each group
 
 ### Phase 2D Tests
 1. Gear icon opens settings WebView
@@ -168,3 +177,4 @@ looks good
 |---------|------|---------|
 | 1.0 | 2026-01-30 | Initial draft from review notes |
 | 1.1 | 2026-01-30 | Phase 2A complete - v0.3.0 |
+| 1.2 | 2026-01-30 | Added 2C.4 sortable segments from testing feedback |
