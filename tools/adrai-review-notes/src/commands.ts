@@ -233,7 +233,7 @@ async function addNote(storage: NoteStorage): Promise<void> {
   const note = createNote(content.trim(), selectedType.value, [location], tags, currentBranch);
   storage.addNote(note);
 
-  vscode.window.showInformationMessage(`Review note added: ${truncate(content, 50)}`);
+  vscode.window.showInformationMessage(`${NOTE_TYPE_LABELS[selectedType.value]} added: ${truncate(content, 50)}`);
 }
 
 /**
