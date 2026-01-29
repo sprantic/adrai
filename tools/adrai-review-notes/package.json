@@ -2,7 +2,7 @@
   "name": "adrai-review-notes",
   "displayName": "adrAI Review Notes",
   "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
@@ -18,7 +18,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.108.0"
   },
   "categories": [
     "Other"
@@ -302,6 +302,17 @@
         }
       ]
     },
+    "colors": [
+      {
+        "id": "adrai.otherBranchForeground",
+        "description": "Text color for notes from other branches",
+        "defaults": {
+          "dark": "#6b6b6b",
+          "light": "#a0a0a0",
+          "highContrast": "#808080"
+        }
+      }
+    ],
     "configuration": {
       "title": "adrAI Review Notes",
       "properties": {
@@ -345,7 +356,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.108.1",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "esbuild": "^0.27.2",

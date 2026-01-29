@@ -425,7 +425,7 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const hasMultipleLocations = note.locations.length > 1;
     const isCurrentBranch = !note.branch || note.branch === this.currentBranch;
 
-    // Simple label, use icon color to indicate branch
+    // Simple label
     const label = this.truncate(note.content, 50);
 
     const item = new NoteTreeItem(
@@ -438,15 +438,12 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       note.id
     );
 
-    // Use grayed icon for other branches, normal for current
-    if (isCurrentBranch) {
-      item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
-    } else {
-      item.iconPath = new vscode.ThemeIcon(
-        NOTE_TYPE_ICONS[note.type],
-        new vscode.ThemeColor('disabledForeground')
-      );
-    }
+    // Set resourceUri for FileDecorationProvider to color text
+    // Use custom scheme with branch info encoded
+    const branchFlag = isCurrentBranch ? 'current' : 'other';
+    item.resourceUri = vscode.Uri.parse(`adrai-note://${branchFlag}/${note.id}`);
+
+    item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
     item.tooltip = this.createNoteTooltip(note);
 
     // Build description parts

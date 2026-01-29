@@ -16,6 +16,28 @@ import { NoteStorage } from './noteStorage';
 import { NoteProvider } from './noteProvider';
 import { registerCommands } from './commands';
 
+/**
+ * FileDecorationProvider to color notes from other branches
+ */
+class NoteDecorationProvider implements vscode.FileDecorationProvider {
+  provideFileDecoration(uri: vscode.Uri): vscode.FileDecoration | undefined {
+    // Only handle our custom scheme
+    if (uri.scheme !== 'adrai-note') {
+      return undefined;
+    }
+
+    // Check if it's from another branch (encoded in authority)
+    if (uri.authority === 'other') {
+      return {
+        color: new vscode.ThemeColor('adrai.otherBranchForeground'),
+        tooltip: 'Note from another branch'
+      };
+    }
+
+    return undefined;
+  }
+}
+
 let storage: NoteStorage;
 let provider: NoteProvider;
 
@@ -43,6 +65,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // Register commands
     registerCommands(context, storage, provider);
+
+    // Register file decoration provider for colored text
+    const decorationProvider = new NoteDecorationProvider();
+    context.subscriptions.push(
+      vscode.window.registerFileDecorationProvider(decorationProvider)
+    );
 
     // Show welcome message on first use
     const hasShownWelcome = context.globalState.get<boolean>('adrai.shownWelcome');
