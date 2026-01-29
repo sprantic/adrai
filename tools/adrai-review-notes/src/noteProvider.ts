@@ -28,14 +28,21 @@ export type TreeItemContextValue = 'group' | 'note' | 'note-other-branch' | 'loc
  * Tree item representing a note, location, or group header
  */
 export class NoteTreeItem extends vscode.TreeItem {
+  public readonly itemType: TreeItemContextValue;
+  public readonly data?: ReviewNote | NoteLocation;
+  public readonly noteId?: string;
+
   constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly itemType: TreeItemContextValue,
-    public readonly data?: ReviewNote | NoteLocation,
-    public readonly noteId?: string
+    label: string | vscode.TreeItemLabel,
+    collapsibleState: vscode.TreeItemCollapsibleState,
+    itemType: TreeItemContextValue,
+    data?: ReviewNote | NoteLocation,
+    noteId?: string
   ) {
     super(label, collapsibleState);
+    this.itemType = itemType;
+    this.data = data;
+    this.noteId = noteId;
     this.contextValue = itemType;
   }
 }
@@ -426,7 +433,7 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     };
 
     const item = new NoteTreeItem(
-      labelText,
+      label,
       hasMultipleLocations
         ? vscode.TreeItemCollapsibleState.Collapsed
         : vscode.TreeItemCollapsibleState.None,
@@ -434,9 +441,6 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
       note,
       note.id
     );
-
-    // Set label with strikethrough for other branches
-    item.label = label;
     item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
     item.tooltip = this.createNoteTooltip(note);
 
