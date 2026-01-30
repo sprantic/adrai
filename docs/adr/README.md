@@ -26,7 +26,7 @@ Index of architectural decisions for adrai (AIDE Debate Tracking System).
 
 ## Creating New ADRs
 
-1. Copy template from `../../assets/aide-blueprint/docs/ai-coding/06-templates/adr-template.md`
+1. Copy template from `./templates/adr-template.md`
 2. Use next available number: `ADR-003`
 3. Name file: `ADR-003-brief-title.md`
 4. Add entry to this index
