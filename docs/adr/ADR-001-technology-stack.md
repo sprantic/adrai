@@ -9,7 +9,7 @@
 
 ## Context
 
-adrAI needs a technology stack for:
+adrai needs a technology stack for:
 1. CLI tools for debate management and mesh operations
 2. VS Code extension for personal annotations
 3. Data storage for debates, notes, and dependency graphs
@@ -124,7 +124,7 @@ The technology choices need to align with:
 ## References
 
 - [AIDE-0001: Review Notes Extension](../../plans/AIDE-0001-review-notes-extension.md)
-- [adrAI Specification](../adrAI-AIDE-Debate-Tracking-System.md)
+- [adrai Conceptual Overview](../adrai-conceptual-overview.md)
 - [Argdown](https://argdown.org/)
 - [Mermaid](https://mermaid.js.org/)
 

@@ -1,4 +1,4 @@
-# AIDE-0003: adrAI Review Notes UX Improvements
+# AIDE-0003: adrai Review Notes UX Improvements
 
 > **Status:** Complete
 > **Author:** @sprantic
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Implement five UX improvements for the adrAI Review Notes VS Code extension to reduce friction and improve workflows when working with many notes, including branch-aware note management.
+Implement five UX improvements for the adrai Review Notes VS Code extension to reduce friction and improve workflows when working with many notes, including branch-aware note management.
 
 ---
 

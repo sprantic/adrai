@@ -1,10 +1,3 @@
-# Debate Template
-
-Copy this template for new debates. Save as `docs/debates/DEB-NNNN-topic-name.deb.md`.
-
----
-
-```markdown
 # DEB-NNNN: [Central Question]
 
 > **Status:** Draft | Active | Blocked | Deciding | Resolved | Superseded
@@ -49,24 +42,11 @@ Copy this template for new debates. Save as `docs/debates/DEB-NNNN-topic-name.de
 
 [Central Question]: What is the core question we need to answer?
 
-<!--
-Argdown syntax: The central question is enclosed in square brackets.
-This should be specific, answerable, and directly related to a decision.
--->
-
 ---
 
 ## Theses
 
 ### Thesis A: [Option Name]
-
-<!--
-Argdown uses indentation and +/- prefixes:
-+ means supporting claim (pro)
-- means opposing claim (con)
-<angle brackets> denote objections
-Nested indentation shows claim hierarchy
--->
 
 <[Thesis A]>: [One-sentence position statement]
 
@@ -157,11 +137,6 @@ Nested indentation shows claim hierarchy
 
 ## Complexity Score
 
-<!--
-Score each factor 0-3, sum for total (0-18 scale).
-Score >= 10 confirms debate was warranted.
--->
-
 | Factor | Score (0-3) | Notes |
 |--------|-------------|-------|
 | Alternative Count | | |
@@ -179,70 +154,3 @@ Score >= 10 confirms debate was warranted.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | YYYY-MM-DD | @author | Initial draft |
-```
-
----
-
-## Usage Notes
-
-### When to Create a Debate
-
-Use the 7-Gate Decision Flow:
-1. **Critical file patterns** touched (auth/*, security/*)
-2. **Risk Level Critical** in AIDE plan
-3. **Stakeholder disagreement** expressed
-4. **Precedent-setting** decision
-5. **Irreversible** change
-6. **Complexity score >= 10**
-7. **Author flags uncertainty**
-
-If ANY gate triggers → Create debate
-
-### Argdown Syntax Quick Reference
-
-```argdown
-[Central Question]: The main question being debated
-
-<[Thesis A]>: A proposed answer (angle brackets = thesis)
-
-+ [Claim]: Supporting argument (+ prefix)
-  + [Sub-claim]: Nested support
-  - <Objection>: Counter-argument (angle brackets = objection)
-    + [Response]: Rebuttal to objection
-
-- [Weakness]: Acknowledged limitation (- prefix)
-```
-
-### Status Lifecycle
-
-```
-DRAFT → ACTIVE → BLOCKED/DECIDING → RESOLVED
-                        ↓
-                   SUPERSEDED
-```
-
-| Status | Description |
-|--------|-------------|
-| Draft | Owner structuring question and theses |
-| Active | Team contributing arguments and evidence |
-| Blocked | Waiting on dependent debate to resolve |
-| Deciding | Voting period, no new arguments |
-| Resolved | Decision made, produces ADR |
-| Superseded | Replaced by newer debate |
-
-### Linking to Plans and ADRs
-
-```markdown
-# In the debate:
-> **Blocks:** AIDE-0145
-
-# In the AIDE plan:
-> **Blocked by:** DEB-0042
-
-# After resolution, in ADR:
-> **Resolved by:** DEB-0042
-```
-
----
-
-[← Debates README](../README.md) | [Argdown Guide →](../argdown-guide.md)

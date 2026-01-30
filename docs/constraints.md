@@ -1,4 +1,4 @@
-# adrAI Constraints & Boundaries
+# adrai Constraints & Boundaries
 
 > **Version:** 1.0
 > **Last Updated:** 2026-01-29
@@ -9,7 +9,7 @@
 
 ## Purpose
 
-This document defines the constraints and boundaries that all adrAI work must respect. These constraints inform plan risk assessment, AI guardrails, architecture decisions, and code review checkpoints.
+This document defines the constraints and boundaries that all adrai work must respect. These constraints inform plan risk assessment, AI guardrails, architecture decisions, and code review checkpoints.
 
 ---
 
@@ -219,7 +219,7 @@ When a constraint cannot be met:
 - [Goals & Objectives](goals.md)
 - [Architecture Overview](software-architecture/overview.md)
 - [ADRs](adr/README.md)
-- [adrAI Specification](adrAI-AIDE-Debate-Tracking-System.md)
+- [adrai Conceptual Overview](adrai-conceptual-overview.md)
 
 ---
 

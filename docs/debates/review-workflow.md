@@ -37,6 +37,7 @@ As you review artifacts (plans, ADRs, code), capture thoughts immediately:
 2. Press **Ctrl+Shift+N** (Cmd+Shift+N on Mac)
 3. **Enter your thought** as a quick note
 4. **Select type**:
+   - `Idea` - Capture a new idea or insight
    - `Question` - Need answer/clarification
    - `Uncertainty` - Not sure yet, need more context
    - `Concern` - Potential issue to investigate
@@ -184,6 +185,7 @@ When promoting a note to debate:
 
 | Type | Icon | When to Use | Typical Outcome |
 |------|------|-------------|-----------------|
+| **Idea** | 💡 | Capture a new idea or insight | Keep or act on |
 | **Question** | 🔍 | Need factual answer | Resolved with answer |
 | **Uncertainty** | ❓ | Need more context | Often resolved after reading more |
 | **Concern** | ⚠️ | Potential issue | Investigate, maybe promote |

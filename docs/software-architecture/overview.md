@@ -1,7 +1,7 @@
-# adrAI Architecture Overview
+# adrai Architecture Overview
 
-> **Version:** 1.0
-> **Last Updated:** 2026-01-29
+> **Version:** 2.0
+> **Last Updated:** 2026-01-31
 > **Owner:** @sprantic
 > **Related:** [Vision](../vision.md) | [Goals](../goals.md) | [Constraints](../constraints.md)
 
@@ -11,7 +11,7 @@
 
 ### Purpose
 
-adrAI (AIDE Debate Tracking System) provides structured validation for AI-assisted engineering by:
+adrai (AIDE Review Lifecycle Management System) provides structured validation for AI-assisted engineering by:
 - Capturing review observations as personal notes
 - Promoting observations to formal debates when warranted
 - Tracking dependency relationships between debates, plans, and ADRs
@@ -29,7 +29,7 @@ adrAI (AIDE Debate Tracking System) provides structured validation for AI-assist
          │                                                   │
          │              ┌─────────────────────┐              │
          │              │                     │              │
-         └─────────────▶│       adrAI          │◀─────────────┘
+         └─────────────▶│       adrai          │◀─────────────┘
                         │                     │
                         └─────────────────────┘
                                  │
@@ -114,7 +114,9 @@ Based on AIDE values and project constraints:
 
 | Store | Type | Purpose | Owner |
 |-------|------|---------|-------|
-| `~/.adrai/review-notes.yaml` | YAML | Personal annotations | Extension |
+| `~/.adrai/review-notes.yaml` | YAML | Personal annotations (default) | Extension |
+| `~/.adrai/[project]/review-notes.yaml` | YAML | Project-specific annotations | Extension |
+| Custom path via `adrai.storageLocation` | YAML | User-defined location | Extension |
 | `docs/debates/*.deb.md` | Markdown | Formal debates | Team |
 | `docs/debates/.deb-graph.yaml` | YAML | Dependency mesh | Team |
 | `docs/adr/*.md` | Markdown | Architecture decisions | Team |
@@ -165,8 +167,9 @@ tools/adrai-review-notes/
 ├── src/
 │   ├── extension.ts        # Entry point, command registration
 │   ├── noteStorage.ts      # YAML persistence layer
-│   ├── noteTreeProvider.ts # Sidebar tree view
-│   ├── debatePromoter.ts   # Note → Debate workflow
+│   ├── noteProvider.ts     # Sidebar tree view provider
+│   ├── commands.ts         # Command handlers
+│   ├── settingsPanel.ts    # WebView settings UI
 │   └── types.ts            # TypeScript interfaces
 ├── package.json            # Extension manifest
 └── tsconfig.json           # TypeScript config
@@ -175,22 +178,128 @@ tools/adrai-review-notes/
 ### Extension Data Model
 
 ```typescript
-interface ReviewNote {
-  id: string;              // UUID
-  content: string;         // Note text
-  type: NoteType;          // question | uncertainty | concern | bookmark | pre-debate
-  status: NoteStatus;      // active | resolved | promoted
-  locations: Location[];   // Multiple file locations
-  createdAt: string;       // ISO timestamp
-  promotedTo?: string;     // DEB-NNNN if promoted
+/**
+ * Type of review note - ordered by urgency (low to high)
+ */
+type NoteType =
+  | 'idea'          // Capture a new idea or insight (+)
+  | 'bookmark'      // Come back to this later
+  | 'uncertainty'   // Not sure yet, need more context (~)
+  | 'question'      // Need answer/clarification (?)
+  | 'concern'       // Potential issue to investigate (!)
+  | 'pre-debate';   // Might warrant formal DEB-NNNN (!!)
+
+/**
+ * Status of a review note through its lifecycle
+ */
+type NoteStatus =
+  | 'open'          // Newly created, needs attention
+  | 'investigating' // Being researched/explored
+  | 'promote'       // Marked for debate promotion
+  | 'resolved';     // Closed, no longer active
+
+/**
+ * Position in a file (for selection capture)
+ */
+interface FilePosition {
+  line: number;       // 1-indexed
+  character: number;  // 0-indexed
 }
 
-interface Location {
-  filePath: string;        // Relative to workspace
-  line: number;            // 1-indexed
-  character: number;       // 0-indexed
+/**
+ * A specific location in a file that a note references
+ */
+interface NoteLocation {
+  file: string;                   // Absolute or workspace-relative path
+  line: number;                   // 1-indexed
+  section?: string;               // Optional section name for semantic reference
+  preview?: string;               // Preview of text at this location
+  selectionStart?: FilePosition;  // Selection start (if text was selected)
+  selectionEnd?: FilePosition;    // Selection end (if text was selected)
+}
+
+/**
+ * A review note with optional multi-location references
+ */
+interface ReviewNote {
+  id: string;                 // UUID v4
+  content: string;            // Note text
+  type: NoteType;             // Classification
+  status: NoteStatus;         // Current status
+  created: string;            // ISO 8601 creation timestamp
+  updated: string;            // ISO 8601 last update timestamp
+  locations: NoteLocation[];  // One or more file locations (can be empty)
+  branch?: string;            // Git branch when created (null = all branches)
+  promoted_to?: string;       // DEB-NNNN if promoted
+  tags?: string[];            // Deprecated - kept for backwards compat
+}
+
+/**
+ * Undo stack entry for reversible operations
+ */
+interface UndoEntry {
+  operation: 'delete' | 'update';
+  noteId: string;
+  snapshot: ReviewNote;
+  timestamp: string;
 }
 ```
+
+---
+
+### Extension Features
+
+#### Core Features
+- **Multi-location notes** — Notes can reference multiple file locations
+- **Location-free notes** — Notes without file locations (pure ideas)
+- **Branch awareness** — Filter notes by git branch
+- **Stale location detection** — Detect moved/deleted file references
+
+#### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Shift+N` | Add new review note |
+| `Ctrl+Shift+L` | Add location to selected note |
+| `Ctrl+Shift+R` | Toggle review notes panel |
+| `Ctrl+Shift+F` | Search notes (when panel focused) |
+| `Ctrl+Shift+B` | Quick bookmark note |
+| `Ctrl+Alt+Enter` | Navigate to selected note |
+| `Ctrl+C` | Copy note text (when panel focused) |
+| `F2` | Edit note (when panel focused) |
+| `Ctrl+Z` | Undo last delete/update (when panel focused) |
+
+#### Configuration Options
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| `adrai.storageLocation` | string | `~/.adrai/review-notes.yaml` | Path to notes file |
+| `adrai.projectStorage` | boolean | `false` | Per-project storage mode |
+| `adrai.debateTemplateDir` | string | `docs/debates/templates` | Debate templates path |
+| `adrai.debatesDir` | string | `docs/debates` | Debates directory path |
+| `adrai.groupBy` | enum | `status` | Grouping: status, type, file |
+| `adrai.branchFilter` | boolean | `false` | Show current branch only |
+| `adrai.showLocation` | boolean | `true` | Show file location in note |
+| `adrai.showBranch` | boolean | `true` | Show branch name for other branches |
+| `adrai.showDate` | boolean | `false` | Show creation date |
+| `adrai.sortBy` | enum | `date` | Sort: date, type, status |
+| `adrai.sortOrder` | enum | `desc` | Sort: asc, desc |
+| `adrai.quickNoteDefaultType` | enum | `bookmark` | Default type for quick note |
+| `adrai.quickNoteDefaultStatus` | enum | `open` | Default status for quick note |
+| `adrai.showNoteIcons` | boolean | `true` | Show icons on notes |
+
+#### Quick Note Auto-Detection
+
+Quick note (`Ctrl+Shift+B`) detects note type from punctuation:
+
+| Punctuation | Type |
+|-------------|------|
+| `+` | idea |
+| `~` | uncertainty |
+| `?` | question |
+| `!` | concern |
+| `!!` | pre-debate |
+| (none) | Uses `quickNoteDefaultType` setting |
 
 ---
 
@@ -290,7 +399,7 @@ Key decisions that shaped this architecture:
 - [Goals & Objectives](../goals.md)
 - [Constraints](../constraints.md)
 - [ADRs](../adr/README.md)
-- [adrAI Specification](../adrAI-AIDE-Debate-Tracking-System.md)
+- [Conceptual Overview](../adrai-conceptual-overview.md)
 
 ---
 
@@ -299,3 +408,4 @@ Key decisions that shaped this architecture:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-01-29 | @sprantic | Initial architecture document |
+| 2.0 | 2026-01-31 | @sprantic | Sync with v0.8.2 implementation: updated file structure, data model, NoteType/NoteStatus enums, storage options, keyboard shortcuts, configuration options, added quick note auto-detection |

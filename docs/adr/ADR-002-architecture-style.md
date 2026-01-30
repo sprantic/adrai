@@ -9,7 +9,7 @@
 
 ## Context
 
-adrAI needs an architecture that:
+adrai needs an architecture that:
 1. Keeps all artifacts in version control for traceability
 2. Works without external databases or services
 3. Supports AI-assisted workflows (AI reads/writes artifacts)
@@ -178,7 +178,7 @@ project/
 ## References
 
 - [ADR-001: Technology Stack](ADR-001-technology-stack.md)
-- [adrAI Specification](../adrAI-AIDE-Debate-Tracking-System.md)
+- [adrai Conceptual Overview](../adrai-conceptual-overview.md)
 
 ---
 

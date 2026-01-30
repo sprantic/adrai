@@ -1,9 +1,12 @@
 # AIDE-0006: UX Improvements Phase 3
 
 > **Status:** Complete (with known issue)
+> **Author:** @sprantic
 > **Created:** 2026-01-30
-> **Author:** selfscrum
+> **AIDE ID:** AIDE-0006
 > **Risk Level:** Medium
+> **Blocked by:** None
+> **Depends on:** AIDE-0005 (Complete)
 
 ---
 

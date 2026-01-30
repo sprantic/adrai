@@ -1,4 +1,4 @@
-# adrAI Vision
+# adrai Vision
 
 > **Version:** 1.0
 > **Last Updated:** 2026-01-29
@@ -8,13 +8,13 @@
 
 ## Purpose
 
-adrAI (AIDE Debate Tracking System) exists to structure the validation bottleneck in AI-assisted engineering, where AI creates fast but humans validate slow.
+adrai is the AIDE Review Lifecycle Management System. It exists to structure the validation bottleneck in AI-assisted engineering, where AI creates fast but humans validate slow.
 
 ---
 
 ## Vision Statement
 
-In 12-18 months, adrAI will be the standard approach for managing complex decisions in AI-assisted engineering projects. Development teams will use structured debates to validate AI output efficiently, maintain decision traceability, and accelerate consensus without sacrificing quality. The friction between AI velocity and human validation will be resolved through AI-aided review assistance.
+In 12-18 months, adrai will be the standard approach for managing complex decisions in AI-assisted engineering projects. Development teams will use structured debates to validate AI output efficiently, maintain decision traceability, and accelerate consensus without sacrificing quality. The friction between AI velocity and human validation will be resolved through AI-aided review assistance.
 
 ---
 
@@ -64,8 +64,8 @@ AI-assisted engineering has dramatically increased development velocity, but hum
 
 ### For Engineers Reviewing AI Output
 
-Who spend significant time validating AI-generated artifacts,
-adrAI provides structured capture and escalation of review observations
+For those who spend significant time validating AI-generated artifacts,
+adrai provides structured capture and escalation of review observations.
 That reduces cognitive load and ensures important concerns aren't lost.
 
 ### Key Benefits
@@ -113,10 +113,10 @@ That reduces cognitive load and ensures important concerns aren't lost.
 
 ## Related Documents
 
+- [adrai Specification](adrai-conceptual-overview.md)
 - [Goals & Objectives](goals.md)
 - [Architecture Overview](software-architecture/overview.md)
 - [ADRs](adr/README.md)
-- [adrAI Specification](adrAI-AIDE-Debate-Tracking-System.md)
 
 ---
 

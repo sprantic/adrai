@@ -1,4 +1,4 @@
-# adrAI Goals & Objectives
+# adrai Goals & Objectives
 
 > **Version:** 1.0
 > **Last Updated:** 2026-01-29
@@ -9,7 +9,7 @@
 
 ## Goals Overview
 
-adrAI aims to structure the validation process in AI-assisted engineering through five strategic goals: review-triggered debates, artifact lineage, dependency mesh management, AI-aided review, and personal annotations.
+adrai aims to structure the validation process in AI-assisted engineering through five strategic goals: review-triggered debates, artifact lineage, dependency mesh management, AI-aided review, and personal annotations.
 
 ---
 
@@ -209,7 +209,7 @@ adrAI aims to structure the validation process in AI-assisted engineering throug
 - [Constraints](constraints.md)
 - [Architecture Overview](software-architecture/overview.md)
 - [AIDE Plans](../plans/)
-- [adrAI Specification](adrAI-AIDE-Debate-Tracking-System.md)
+- [adrai Conceptual Overview](adrai-conceptual-overview.md)
 
 ---
 

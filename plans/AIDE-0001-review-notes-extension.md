@@ -11,7 +11,7 @@
 
 ## Summary
 
-Personal annotation layer for adrAI artifact review. A VS Code extension that allows capturing review notes during code/plan review, with ability to promote notes to formal debates when discussion is warranted.
+Personal annotation layer for adrai artifact review. A VS Code extension that allows capturing review notes during code/plan review, with ability to promote notes to formal debates when discussion is warranted.
 
 ---
 
@@ -26,11 +26,11 @@ During AI-assisted development, humans need to validate AI-generated artifacts (
 
 ### Current State
 
-The adrAI debate system requires formal `DEB-NNNN` artifacts. This creates friction for capturing initial observations that may or may not warrant full debate.
+The adrai debate system requires formal `DEB-NNNN` artifacts. This creates friction for capturing initial observations that may or may not warrant full debate.
 
 ### Related Work
 
-- adrAI Specification: [docs/adrAI-AIDE-Debate-Tracking-System.md](../docs/adrAI-AIDE-Debate-Tracking-System.md)
+- adrai Conceptual Overview: [docs/adrai-conceptual-overview.md](../docs/adrai-conceptual-overview.md)
 - Debate System: [docs/debates/README.md](../docs/debates/README.md)
 
 ---

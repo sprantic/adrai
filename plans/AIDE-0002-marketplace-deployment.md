@@ -11,7 +11,7 @@
 
 ## Summary
 
-Prepare the adrAI Review Notes VS Code extension for publishing to the VS Code Marketplace by adding required metadata files and configuration.
+Prepare the adrai Review Notes VS Code extension for publishing to the VS Code Marketplace by adding required metadata files and configuration.
 
 ---
 

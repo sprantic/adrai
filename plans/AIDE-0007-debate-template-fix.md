@@ -1,9 +1,12 @@
 # AIDE-0007: Debate Template Fix
 
 > **Status:** Complete
+> **Author:** @sprantic
 > **Created:** 2026-01-30
-> **Author:** selfscrum
+> **AIDE ID:** AIDE-0007
 > **Risk Level:** Low
+> **Blocked by:** None
+> **Depends on:** AIDE-0006 (Complete)
 
 ---
 

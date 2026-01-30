@@ -1,19 +1,21 @@
-# adrAI
+# adrai
 
-**AIDE Debate Tracking System** — Structuring the validation bottleneck in AI-assisted engineering, where AI creates fast but humans validate slow.
+**AIDE Review Lifecycle Managemnt System** — Structuring the validation bottleneck in AI-assisted engineering, where AI creates fast but humans validate slow.
 
 ## The Problem
 
-AI-assisted engineering has dramatically increased development velocity, but human review processes haven't kept pace:
+AI-assisted software development has dramatically increased engineering velocity, but human review processes haven't kept pace:
 
 - AI generates plans, code, and decisions faster than humans can validate
+- The human in the loop is overwhelmed with documentation that needs attention
+- Teams are having a hard time coordinating the work - agile rituals are way to slow
 - Multiple architecture debates happen simultaneously with no structure
 - Dependencies between decisions create an invisible mesh
 - ADRs capture decisions but not the reasoning journey
 
 ## The Solution
 
-adrAI extends AIDE with:
+adrai extends AIDE with:
 
 - **Review-triggered debates** with 7-gate escalation criteria
 - **Artifact lineage** answering "why does this exist?" at a glance
@@ -25,16 +27,7 @@ adrAI extends AIDE with:
 
 ### VS Code Extension
 
-The Review Notes extension captures fleeting thoughts during code review:
-
-```bash
-cd tools/adrai-review-notes
-bun install
-bun run compile
-# Press F5 in VS Code to launch, or:
-bun run package
-code --install-extension adrai-review-notes-0.1.0.vsix
-```
+The Review Notes extension captures fleeting thoughts during code review.
 
 **Keyboard shortcuts:**
 - `Ctrl+Shift+N` — Add review note at cursor
@@ -54,11 +47,11 @@ When a review note warrants formal discussion:
 
 | Document | Description |
 |----------|-------------|
-| [Vision](docs/vision.md) | Why adrAI exists, problem statement, success indicators |
+| [Vision](docs/vision.md) | Why adrai exists, problem statement, success indicators |
 | [Goals](docs/goals.md) | 5 strategic goals with objectives and milestones |
 | [Constraints](docs/constraints.md) | Technical boundaries and design decisions |
 | [Architecture](docs/software-architecture/overview.md) | System structure and component design |
-| [adrAI Specification](docs/adrAI-AIDE-Debate-Tracking-System.md) | Complete debate system design |
+| [adrai Concepts](docs/adrai-conceptual-overview.md) | Complete debate system design |
 | [Debates Guide](docs/debates/README.md) | How to use debates, 7-gate flow, templates |
 | [Review Workflow](docs/debates/review-workflow.md) | Personal notes → debate promotion flow |
 
@@ -67,7 +60,7 @@ When a review note warrants formal discussion:
 ```
 adrai/
 ├── docs/
-│   ├── vision.md              # Why adrAI exists
+│   ├── vision.md              # Why adrai exists
 │   ├── goals.md               # Strategic objectives
 │   ├── constraints.md         # Technical boundaries
 │   ├── adr/                   # Architecture Decision Records

@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-Index of architectural decisions for adrAI (AIDE Debate Tracking System).
+Index of architectural decisions for adrai (AIDE Debate Tracking System).
 
 ---
 
@@ -26,7 +26,7 @@ Index of architectural decisions for adrAI (AIDE Debate Tracking System).
 
 ## Creating New ADRs
 
-1. Copy template from `../debates/templates/adr-template.md`
+1. Copy template from `../../assets/aide-blueprint/docs/ai-coding/06-templates/adr-template.md`
 2. Use next available number: `ADR-003`
 3. Name file: `ADR-003-brief-title.md`
 4. Add entry to this index
@@ -36,6 +36,6 @@ Index of architectural decisions for adrAI (AIDE Debate Tracking System).
 
 ## Related
 
-- [adrAI Specification](../adrAI-AIDE-Debate-Tracking-System.md)
+- [adrai Conceptual Overview](../adrai-conceptual-overview.md)
 - [Constraints](../constraints.md)
 - [Architecture Overview](../software-architecture/overview.md)

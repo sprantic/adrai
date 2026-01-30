@@ -1,6 +1,6 @@
-# AIDE-0004: adrAI Review Notes UX Improvements Phase 2
+# AIDE-0004: adrai Review Notes UX Improvements Phase 2
 
-> **Status:** In Progress
+> **Status:** Complete
 > **Author:** @sprantic
 > **Created:** 2026-01-30
 > **AIDE ID:** AIDE-0004
@@ -24,7 +24,7 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 
 ## Phase 2A: Quick Wins ✅ COMPLETE
 
-### 2A.1 Remove "adrAI:" Prefix ✅
+### 2A.1 Remove "adrai:" Prefix ✅
 - **Note ID:** fc24a114-2ed8-4d87-ae8c-11f38c08f998
 - **Change:** Update command titles in package.json - moved prefix to `category` field
 - **Files:** `package.json`
@@ -69,47 +69,54 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 
 ---
 
-## Phase 2C: Visual Enhancements
+## Phase 2C: Visual Enhancements ✅ COMPLETE
 
 ### 2C.1 Colored Tags ❌ REMOVED
 - **Decision:** Tags feature removed entirely
 
-### 2C.2 Active Toggle Indicators
+### 2C.2 Active Toggle Indicators ✅
 - **Note ID:** 53448885-0105-4fd8-83a9-1555b4d95cf0
-- **Change:** Active filter buttons show visual feedback
-- **Files:** `extension.ts` (context values), `package.json` (when clauses)
+- **Change:** Branch filter button shows filled icon when active
+- **Files:** `commands.ts` (context values), `package.json` (when clauses, dual commands)
+- **Implementation:** Added `adrai.branchFilterActive` context, two menu entries with conditional display
 
-### 2C.3 Configurable Note Line Display
+### 2C.3 Configurable Note Line Display ✅
 - **Note ID:** 1b2931fd-9153-4cb5-b7ff-239d364e3c8b
-- **Change:** Settings to show/hide: note, location, branch, date
+- **Change:** Settings to show/hide: location, branch, date in note description
 - **Files:** `noteProvider.ts`, `package.json` (settings)
+- **Implementation:** Added `showLocation`, `showBranch`, `showDate` settings with conditional description building
 
-### 2C.4 Sortable Note Segments
+### 2C.4 Sortable Note Segments ✅
 - **Source:** Manual testing (tests.md)
-- **Change:** Notes within each status group sortable by creation date or type (ascending/descending)
+- **Change:** Notes within each status group sortable by creation date, type, or urgency
 - **Files:** `noteProvider.ts`, `package.json` (settings)
 - **Settings:**
   - `adrai.sortBy`: "date" | "type" | "urgency"
   - `adrai.sortOrder`: "asc" | "desc"
+- **Implementation:** Added `sortNotes()` method with three sorting modes
 
 ---
 
-## Phase 2D: Advanced Features
+## Phase 2D: Advanced Features ✅ COMPLETE
 
-### 2D.1 Settings Panel UI
+### 2D.1 Settings Panel UI ✅
 - **Note ID:** 154b3bce-c412-4274-9853-67deae1801e6
-- **Change:** Replace toolbar with gear icon → WebView settings panel
+- **Change:** Gear icon opens WebView settings panel
 - **Files:** New `settingsPanel.ts`, `extension.ts`, `package.json`
+- **Implementation:** WebView panel with sections for display options, organization, filtering, and quick note defaults
 
-### 2D.2 Quick Note Configuration
+### 2D.2 Quick Note Configuration ✅
 - **Note ID:** 4b79f614-9c33-4917-b01b-52be6987b681
-- **Change:** Configure default tag(s) and state for Ctrl+Shift+B
+- **Change:** Configure default note type for Ctrl+Shift+B (tags removed)
 - **Files:** `package.json` (settings), `commands.ts`
+- **Settings:** `adrai.quickNoteDefaultType` with enum of note types
+- **Implementation:** Updated quickNote to read configured default type
 
-### 2D.3 Drag & Drop State Change
+### 2D.3 Drag & Drop State Change ✅
 - **Note ID:** e0ed5a97-d366-4b20-9080-4ab8bad57e63
 - **Change:** Drag notes between status groups to change state
-- **Files:** `noteProvider.ts` (DragAndDropController), `extension.ts`
+- **Files:** `noteProvider.ts` (TreeDragAndDropController), `extension.ts`
+- **Implementation:** Implemented handleDrag/handleDrop, works when groupBy=status
 
 ---
 
@@ -117,19 +124,19 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 
 | File | Phases | Changes |
 |------|--------|---------|
-| `package.json` | All | Commands, settings, keybindings |
+| `package.json` | All | Commands, settings, keybindings, menu entries |
 | `commands.ts` | 2A, 2B, 2D | Auto-detect, shortcuts, quick note config |
-| `noteProvider.ts` | 2A, 2B, 2C, 2D | Search, display, drag & drop |
-| `extension.ts` | 2B, 2C, 2D | Ctrl-Click, toggles, settings panel |
-| `types.ts` | 2C | Tag color config |
-| `settingsPanel.ts` | 2D | New WebView panel |
+| `noteProvider.ts` | 2A, 2B, 2C, 2D | Search, display, sorting, drag & drop controller |
+| `extension.ts` | 2B, 2C, 2D | Ctrl-Click, toggles, settings panel registration |
+| `types.ts` | 2C | Type definitions |
+| `settingsPanel.ts` | 2D | New WebView settings panel |
 
 ---
 
 ## Verification
 
 ### Phase 2A Tests
-1. Context menus show "Add Review Note" not "adrAI: Add Review Note"
+1. Context menus show "Add Review Note" not "adrai: Add Review Note"
 2. Type "what is this?" → auto-selects Question type
 3. Search for nonexistent term → list unchanged
 
@@ -179,3 +186,5 @@ looks good
 | 1.1 | 2026-01-30 | Phase 2A complete - v0.3.0 |
 | 1.2 | 2026-01-30 | Added 2C.4 sortable segments from testing feedback |
 | 1.3 | 2026-01-30 | Phase 2B complete - v0.4.0 |
+| 1.4 | 2026-01-30 | Phase 2C complete - v0.5.0 |
+| 1.5 | 2026-01-30 | Phase 2D complete - v0.6.0: Settings panel, quick note config, drag & drop |

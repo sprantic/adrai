@@ -1,4 +1,4 @@
-# adrAI: AIDE Debate Tracking System
+# adrai: AIDE Review Lifecycle Management System
 
 **High-Level Plan for Review-Triggered Collaborative Decision Support**
 
@@ -6,7 +6,7 @@
 
 ## Problem Statement
 
-AI-assisted engineering has dramatically increased development velocity, but human review processes haven't kept pace. The core tension:
+AI-assisted software development has dramatically increased engineering velocity, but human review processes haven't kept pace. The core tension:
 
 ```
 AI creates plans/code (fast) → Human must validate (slow, tedious) → Bottleneck
@@ -20,28 +20,51 @@ Specific pain points:
 - **Humans validating AI output is tedious and error-prone**
 - AI can't help humans review AI output effectively
 
-## Proposed Solution: adrAI
+## Proposed Solution: adrai
 
 Extend AIDE with a **Review-Triggered Debate System** that:
 
-1. **Spawns debates from reviews** - Plan/code reviews trigger structured discussions
-2. **Structured debate artifacts** in-repo (Argdown-compatible Markdown in docs/)
-3. **AI-aided review** - AI helps humans validate AI-generated content on demand
-4. **Dependency mesh** - Track blocking relationships across debates
-5. **LINK integration** - DEB-NNNN identifiers tie into AIDE traceability
+1. **Allows to take Review Notes efficiently** - Seamless support from personal notes to structured debate
+2. **Spawns debates from reviews** - Plan/code reviews trigger structured discussions
+3. **Structured debate artifacts** in-repo (Argdown-compatible Markdown in docs/)
+4. **AI-aided review** - AI helps humans validate AI-generated content on demand
+5. **Dependency mesh** - Track blocking relationships across debates
+6. **LINK integration** - DEB-NNNN identifiers tie into AIDE traceability
 
 **Key insight:** The system serves the review bottleneck. AI creates, humans validate, AI helps humans validate efficiently.
 
 ## Implementation Scope
 
-**Phase 1: adrai-specific** - Build and validate in this project first
-**Phase 2: Generalize** - Extract patterns to AIDE-blueprint for community
+* **Phase 1: adrai-specific** - Create personal tooling, build and validate in this project first
+* **Phase 2: Generalize** - Extract patterns to AIDE-blueprint for community
 
 ---
 
 ## Core Architecture
 
-### 1. Debate Artifact Hierarchy
+### 1. Review Artifact Hierarchy
+
+**Personal Awareness and Sensemaking**
+
+Observation Gravity (Implicit Hierarchy)
+
+```
+IDEA
+BOOKMARK
+UNCERTAINTY
+QUESTION
+CONCERN
+PRE-DEBATE
+```
+
+Observation Lifecycle Status (Explicit Progress)
+
+```
+OPEN → INVESTIGATING → PROMOTE → RESOLVED
+```
+
+**Team-oriented Debates**
+
 
 ```
 QUESTION (Open Problem)
@@ -54,6 +77,10 @@ QUESTION (Open Problem)
 ```
 
 ### 2. LINK Integration
+
+Personal Notes are managed in the IDE and dont have LINKs to keep the reader focused.
+
+Team lifecycle assets have LINKs to be uniquely identified:
 
 | Artifact | ID Pattern | Example |
 |----------|------------|---------|
@@ -401,14 +428,18 @@ Auto-generated from `.deb-graph.yaml`:
 
 ```mermaid
 graph TD
-    DEB-0038[DEB-0038: Auth Strategy]:::resolved
-    DEB-0042[DEB-0042: Database Choice]:::active
-    AIDE-0145[AIDE-0145]:::blocked
-    AIDE-0146[AIDE-0146]:::blocked
+    DEB_0038["DEB-0038: Auth Strategy"]
+    DEB_0042["DEB-0042: Database Choice"]
+    AIDE_0145["AIDE-0145"]
+    AIDE_0146["AIDE-0146"]
 
-    DEB-0038 --> DEB-0042
-    DEB-0042 --> AIDE-0145
-    DEB-0042 --> AIDE-0146
+    DEB_0038 --> DEB_0042
+    DEB_0042 --> AIDE_0145
+    DEB_0042 --> AIDE_0146
+
+    class DEB_0038 resolved
+    class DEB_0042 active
+    class AIDE_0145,AIDE_0146 blocked
 
     classDef resolved fill:#9f9
     classDef active fill:#9cf
@@ -573,7 +604,7 @@ project/
 9. **UI for non-technical users**: ✅ Static site with argument maps + dashboard views
 10. **Collaboration analytics**: ✅ Participation patterns, alignment/conflict, resolution velocity
 11. **Annotation implementation**: ✅ Custom VS Code Extension (tools/adrai-review-notes/)
-12. **Note types**: ✅ Five types - question, uncertainty, concern, bookmark, pre-debate
+12. **Note types**: ✅ Six types - idea, question, uncertainty, concern, bookmark, pre-debate
 13. **Annotation storage**: ✅ `~/.adrai/review-notes.yaml` (gitignored, personal)
 
 ## Remaining Questions

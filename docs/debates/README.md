@@ -1,4 +1,4 @@
-# adrAI: Debate Tracking System
+# adrai: Debate Tracking System
 
 Structured debates for complex decisions in AI-assisted engineering.
 
@@ -6,14 +6,14 @@ Structured debates for complex decisions in AI-assisted engineering.
 
 ## Overview
 
-adrAI extends AIDE with a **review-triggered debate system** that:
+adrai extends AIDE with a **review-triggered debate system** that:
 
 1. **Spawns debates from reviews** when reasonable experts could disagree
 2. **Tracks "why does this exist"** through scope taxonomy and lineage
 3. **Manages dependency mesh** with blocking relationships
 4. **Provides AI-aided review** to help humans validate AI output
 
-**Core insight:** AI creates fast, humans validate slow. adrAI structures the validation process.
+**Core insight:** AI creates fast, humans validate slow. adrai structures the validation process.
 
 ---
 
@@ -304,8 +304,8 @@ grep -l "Status.*Active" docs/debates/*.deb.md
 ## References
 
 - [Argdown](https://argdown.org/) - Structured argumentation syntax
-- [Full adrAI Specification](../adrAI-AIDE-Debate-Tracking-System.md)
+- [adrai Conceptual Overview](../adrai-conceptual-overview.md)
 
 ---
 
-[Review Workflow](review-workflow.md) | [Templates](templates/) | [Argdown Guide](argdown-guide.md) | [adrAI Specification](../adrAI-AIDE-Debate-Tracking-System.md)
+[Review Workflow](review-workflow.md) | [Templates](templates/) | [Argdown Guide](argdown-guide.md) | [adrai Conceptual Overview](../adrai-conceptual-overview.md)

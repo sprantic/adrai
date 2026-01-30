@@ -1,10 +1,10 @@
-# adrAI (AIDE Debate Tracking System)
+# adrai (AIDE Debate Tracking System)
 
 ## Project Overview
 
-adrAI extends AIDE with a **review-triggered debate system** for structured validation in AI-assisted engineering.
+adrai extends AIDE with a **review-triggered debate system** for structured validation in AI-assisted engineering.
 
-**Core insight:** AI creates fast, humans validate slow. adrAI structures the validation process.
+**Core insight:** AI creates fast, humans validate slow. adrai structures the validation process.
 
 ---
 
@@ -41,11 +41,11 @@ The project repo's `plans/` directory is the single source of truth for all work
 
 ---
 
-## adrAI-Specific Patterns
+## adrai-Specific Patterns
 
 ### Debates
 
-adrAI adds debates (`DEB-NNNN`) to AIDE for complex decisions:
+adrai adds debates (`DEB-NNNN`) to AIDE for complex decisions:
 
 ```
 docs/debates/
@@ -84,11 +84,11 @@ See [docs/debates/README.md](docs/debates/README.md) for full criteria.
 ```
 adrai/
 ├── docs/
-│   ├── vision.md              # Why adrAI exists
+│   ├── vision.md              # Why adrai exists
 │   ├── goals.md               # What we're achieving
 │   ├── constraints.md         # Technical boundaries
 │   ├── adr/                   # Architecture decisions
-│   ├── debates/               # Debate artifacts (adrAI-specific)
+│   ├── debates/               # Debate artifacts (adrai-specific)
 │   └── software-architecture/ # System overview
 ├── plans/
 │   ├── .aide-tracker.md       # AIDE ID allocation
@@ -164,11 +164,11 @@ The VS Code extension (`tools/adrai-review-notes/`) supports:
 
 | Document | Purpose |
 |----------|---------|
-| [Vision](docs/vision.md) | Why adrAI exists |
+| [Vision](docs/vision.md) | Why adrai exists |
 | [Goals](docs/goals.md) | What we're achieving |
 | [Constraints](docs/constraints.md) | Technical boundaries |
 | [Architecture](docs/software-architecture/overview.md) | System structure |
-| [adrAI Spec](docs/adrAI-AIDE-Debate-Tracking-System.md) | Full debate system design |
+| [adrai Conceptual Overview](docs/adrai-conceptual-overview.md) | Full debate system design |
 | [Debates README](docs/debates/README.md) | Debate quick reference |
 
 ---

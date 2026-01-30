@@ -194,7 +194,7 @@ Include the option name:
 
 ---
 
-## Integrating with adrAI
+## Integrating with adrai
 
 ### In Debate Files
 
