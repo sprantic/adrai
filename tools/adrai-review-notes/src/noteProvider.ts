@@ -507,13 +507,23 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     // Set context based on branch
     item.contextValue = isCurrentBranch ? 'note' : 'note-other-branch';
 
-    // If single location, make clickable (works for all branches)
+    // If single location, make clickable
     if (note.locations.length === 1) {
-      item.command = {
-        command: 'adrai.goToLocation',
-        title: 'Go to Location',
-        arguments: [note.locations[0]]
-      };
+      if (isCurrentBranch) {
+        // Current branch - navigate directly
+        item.command = {
+          command: 'adrai.goToLocation',
+          title: 'Go to Location',
+          arguments: [note.locations[0]]
+        };
+      } else {
+        // Other branch - show warning with option to navigate
+        item.command = {
+          command: 'adrai.warnOtherBranch',
+          title: 'Other Branch Note',
+          arguments: [note.locations[0], note.branch]
+        };
+      }
     }
 
     return item;

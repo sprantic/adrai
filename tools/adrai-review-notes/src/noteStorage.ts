@@ -181,26 +181,6 @@ export class NoteStorage {
   }
 
   /**
-   * Get all unique tags from existing notes, sorted by frequency (most used first)
-   */
-  public getAllTags(): string[] {
-    const tagCounts = new Map<string, number>();
-
-    for (const note of this.getAllNotes()) {
-      if (note.tags) {
-        for (const tag of note.tags) {
-          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-        }
-      }
-    }
-
-    // Sort by frequency (most used first)
-    return Array.from(tagCounts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([tag]) => tag);
-  }
-
-  /**
    * Get a note by ID
    */
   public getNote(id: string): ReviewNote | undefined {

@@ -10,13 +10,14 @@ TODO: Notes list segments (per state) should be sortable by creation date, or ty
 
 ### 2B.1 Other-Branch Note Navigation
 - [ ] Click on red (other-branch) note with single location → navigates to file
+FAIL - should work on CTRL-Click only. If clicking on a red node, it should send a warning message that this is anohther branch
 
 ### 2B.2 Panel-Focused Shortcuts
 - [ ] Focus on Review Notes panel, press Ctrl+Shift+N → note created at editor cursor
+PASS
 - [ ] Focus on Review Notes panel, press Ctrl+Shift+B → quick note created at editor cursor
+PASS
 
-### 2B.3 Tag Autocomplete
-- [ ] Create note with existing tags → shows multi-select with existing tags sorted by frequency
-- [ ] Select "Enter custom tags..." → allows adding new tags
-- [ ] No existing tags → shows simple input box
+### 2B.3 Tag Autocomplete ❌ REMOVED
+- Tags feature removed entirely - too complex for limited value
 

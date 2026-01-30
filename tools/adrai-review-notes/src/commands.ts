@@ -152,6 +152,13 @@ export function registerCommands(
       resolveAllInGroup(storage, provider, item)
     )
   );
+
+  // Warn about other-branch note and offer navigation
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.warnOtherBranch', (location?: NoteLocation, branch?: string) =>
+      warnOtherBranch(location, branch)
+    )
+  );
 }
 
 /**
@@ -205,9 +212,6 @@ async function addNote(storage: NoteStorage): Promise<void> {
     selectedType = picked;
   }
 
-  // Get tags (optional) - show existing tags as suggestions
-  const tags = await promptForTags(storage);
-
   // Create location
   const document = editor.document;
   const position = editor.selection.active;
@@ -223,7 +227,7 @@ async function addNote(storage: NoteStorage): Promise<void> {
   const currentBranch = await getCurrentBranch();
 
   // Create and save note
-  const note = createNote(content.trim(), selectedType.value, [location], tags, currentBranch);
+  const note = createNote(content.trim(), selectedType.value, [location], undefined, currentBranch);
   storage.addNote(note);
 
   vscode.window.showInformationMessage(`${NOTE_TYPE_LABELS[selectedType.value]} added: ${truncate(content, 50)}`);
@@ -673,6 +677,21 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
 }
 
 /**
+ * Warn about clicking on other-branch note and offer navigation
+ */
+async function warnOtherBranch(location?: NoteLocation, branch?: string): Promise<void> {
+  const action = await vscode.window.showWarningMessage(
+    `This note is from branch "${branch || 'unknown'}". Navigate anyway?`,
+    'Go to Location',
+    'Cancel'
+  );
+
+  if (action === 'Go to Location' && location) {
+    await goToLocation(location);
+  }
+}
+
+/**
  * Search notes by content, tags, or file
  */
 async function searchNotes(provider: NoteProvider): Promise<void> {
@@ -983,79 +1002,6 @@ function detectNoteType(content: string): NoteType | undefined {
   // No special punctuation - return undefined to show type picker
 
   return undefined; // Let user choose
-}
-
-/**
- * Prompt for tags with autocomplete from existing tags
- */
-async function promptForTags(storage: NoteStorage): Promise<string[] | undefined> {
-  const existingTags = storage.getAllTags();
-
-  // If no existing tags, use simple input
-  if (existingTags.length === 0) {
-    const tagsInput = await vscode.window.showInputBox({
-      prompt: 'Enter tags (optional, comma-separated)',
-      placeHolder: 'e.g., security, performance, api'
-    });
-
-    return tagsInput
-      ? tagsInput.split(',').map(t => t.trim()).filter(t => t.length > 0)
-      : undefined;
-  }
-
-  // Use QuickPick with multi-select for existing tags
-  const tagItems = existingTags.map(tag => ({
-    label: tag,
-    picked: false
-  }));
-
-  // Add option to enter custom tags
-  const customOption = {
-    label: '$(add) Enter custom tags...',
-    alwaysShow: true,
-    picked: false
-  };
-
-  const quickPick = vscode.window.createQuickPick();
-  quickPick.items = [customOption, ...tagItems];
-  quickPick.canSelectMany = true;
-  quickPick.placeholder = 'Select existing tags or choose "Enter custom tags..."';
-  quickPick.title = 'Tags (optional)';
-
-  return new Promise((resolve) => {
-    quickPick.onDidAccept(async () => {
-      const selected = quickPick.selectedItems;
-      quickPick.hide();
-
-      // Check if custom option was selected
-      const hasCustom = selected.some(item => item.label.startsWith('$(add)'));
-      const selectedTags = selected
-        .filter(item => !item.label.startsWith('$(add)'))
-        .map(item => item.label);
-
-      if (hasCustom) {
-        // Also prompt for custom tags
-        const customInput = await vscode.window.showInputBox({
-          prompt: 'Enter additional tags (comma-separated)',
-          placeHolder: 'e.g., security, performance, api'
-        });
-
-        if (customInput) {
-          const customTags = customInput.split(',').map(t => t.trim()).filter(t => t.length > 0);
-          selectedTags.push(...customTags);
-        }
-      }
-
-      resolve(selectedTags.length > 0 ? selectedTags : undefined);
-    });
-
-    quickPick.onDidHide(() => {
-      quickPick.dispose();
-      resolve(undefined);
-    });
-
-    quickPick.show();
-  });
 }
 
 /**

@@ -62,20 +62,17 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 - **Files:** `package.json` (keybinding contexts)
 - **Implementation:** Changed `when` clause to `editorTextFocus || focusedView == adraiReviewNotes`
 
-### 2B.3 Tag Autocomplete with History ✅
+### 2B.3 Tag Autocomplete with History ❌ REMOVED
 - **Note ID:** 5309e211-85a7-43c9-bf48-977e5f05d6f1
-- **Change:** Multi-select QuickPick shows existing tags sorted by frequency
-- **Files:** `commands.ts`, `noteStorage.ts`
-- **Implementation:** Added `getAllTags()` method and `promptForTags()` with multi-select + custom option
+- **Decision:** Tags feature removed entirely - too complex for limited value
+- **Change:** Removed tag input from note creation flow
 
 ---
 
 ## Phase 2C: Visual Enhancements
 
-### 2C.1 Colored Tags
-- **Note ID:** 6abd98d3-148e-4c32-b11b-c66d5d5d3af5
-- **Change:** Tags show with colored backgrounds, configurable per tag
-- **Files:** `noteProvider.ts`, `package.json` (settings), `types.ts`
+### 2C.1 Colored Tags ❌ REMOVED
+- **Decision:** Tags feature removed entirely
 
 ### 2C.2 Active Toggle Indicators
 - **Note ID:** 53448885-0105-4fd8-83a9-1555b4d95cf0
@@ -84,7 +81,7 @@ All items from `~/.adrai/review-notes.yaml` with status: open
 
 ### 2C.3 Configurable Note Line Display
 - **Note ID:** 1b2931fd-9153-4cb5-b7ff-239d364e3c8b
-- **Change:** Settings to show/hide: note, tags, location, branch, date
+- **Change:** Settings to show/hide: note, location, branch, date
 - **Files:** `noteProvider.ts`, `package.json` (settings)
 
 ### 2C.4 Sortable Note Segments
