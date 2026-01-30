@@ -1,5 +1,5 @@
 /**
- * adrAI Review Notes - Command Implementations
+ * adrai Review Notes - Command Implementations
  *
  * All VS Code commands for the review notes extension.
  */
@@ -12,11 +12,203 @@ import {
   NoteLocation,
   NoteType,
   NoteStatus,
+  FilePosition,
   NOTE_TYPE_LABELS,
-  NOTE_TYPES_ORDERED
+  NOTE_TYPES_ORDERED,
+  STATUS_LABELS,
+  STATUS_ICONS
 } from './types';
 import { NoteStorage, createNote, getLinePreview, getCurrentBranch, branchExists } from './noteStorage';
 import { NoteProvider, NoteTreeItem } from './noteProvider';
+
+// AIDE-0007: Default debate template - clean, ready-to-use (no instructions/code fences)
+const DEFAULT_DEBATE_TEMPLATE = `# DEB-NNNN: [Central Question]
+
+> **Status:** Draft | Active | Blocked | Deciding | Resolved | Superseded
+> **Owner:** @your-name
+> **Created:** YYYY-MM-DD
+> **Updated:** YYYY-MM-DD
+> **Priority:** 1 (Urgent) | 2 (High) | 3 (Normal) | 4 (Low)
+
+---
+
+## Lineage
+
+| Field | Value |
+|-------|-------|
+| **Scope** | CON (Concept) |
+| **Parent** | [REQ-NNN](link) or [OBJ-NNN](link) |
+| **Purpose** | [Why does this debate exist? What decision does it enable?] |
+| **Supersedes** | None | DEB-NNNN |
+| **Blocked By** | None | DEB-NNNN |
+
+---
+
+## Dependencies
+
+> **Depends On:** DEB-NNNN, ADR-NNN (list debates/decisions this waits for)
+> **Blocks:** AIDE-NNNN, ADR-NNN (list plans/decisions waiting on this)
+
+---
+
+## Stakeholders
+
+| Role | Person | Required? |
+|------|--------|-----------|
+| Owner | @name | Yes |
+| Decider | @name | Yes |
+| Contributor | @name | No |
+| Reviewer | @name | No |
+
+---
+
+## The Question
+
+[Central Question]: What is the core question we need to answer?
+
+---
+
+## Theses
+
+### Thesis A: [Option Name]
+
+<[Thesis A]>: [One-sentence position statement]
+
++ [Supporting Claim 1]: Description of why this supports Thesis A
+  + [Sub-claim]: Additional supporting evidence
+  - <Objection to claim>: Counter-argument to this claim
+    + [Response]: Rebuttal to the objection
+
++ [Supporting Claim 2]: Another reason to support Thesis A
+
+- [Weakness 1]: Acknowledged limitation of Thesis A
+  + [Mitigation]: How this weakness could be addressed
+
+### Thesis B: [Alternative Option Name]
+
+<[Thesis B]>: [One-sentence position statement]
+
++ [Supporting Claim 1]: Description of why this supports Thesis B
+
+- [Weakness 1]: Acknowledged limitation of Thesis B
+
+### Thesis C: [Do Nothing / Status Quo]
+
+<[Thesis C]>: We should not make a change at this time.
+
++ [Stability]: No risk of regression
+- [Technical Debt]: Problem continues to compound
+
+---
+
+## Evidence
+
+### E1: [Evidence Title]
+
+**Type:** Benchmark | Research | Experience | POC | Expert Opinion
+**Source:** [Link or reference]
+**Summary:** [What does this evidence show?]
+**Supports:** Thesis A, Thesis B
+
+### E2: [Evidence Title]
+
+**Type:** Benchmark | Research | Experience | POC | Expert Opinion
+**Source:** [Link or reference]
+**Summary:** [What does this evidence show?]
+**Supports:** Thesis B
+
+---
+
+## Trade-off Analysis
+
+| Factor | Thesis A | Thesis B | Thesis C |
+|--------|----------|----------|----------|
+| Complexity | Low | Medium | None |
+| Risk | Medium | Low | High (tech debt) |
+| Cost | $ | $$ | $0 |
+| Time to implement | 2 weeks | 4 weeks | N/A |
+| Team familiarity | High | Low | N/A |
+| Reversibility | Easy | Hard | N/A |
+
+---
+
+## Discussion Log
+
+### YYYY-MM-DD: @contributor
+[Summary of contribution or concern raised]
+
+### YYYY-MM-DD: @reviewer
+[Feedback or questions]
+
+---
+
+## Resolution
+
+**Status:** Pending | Voting | Decided
+
+**Decision:** [Which thesis was selected, if resolved]
+
+**Rationale:** [Why this thesis was chosen over alternatives]
+
+**Produces:**
+- [ ] ADR-NNN: [Decision record to create]
+- [ ] Unblocks: AIDE-NNNN, AIDE-NNNN
+
+**Decided by:** @decider
+**Date:** YYYY-MM-DD
+
+---
+
+## Complexity Score
+
+| Factor | Score (0-3) | Notes |
+|--------|-------------|-------|
+| Alternative Count | | |
+| Trade-off Severity | | |
+| Stakeholder Disagreement | | |
+| Precedent Setting | | |
+| Knowledge Gap | | |
+| Time Horizon | | |
+| **Total** | /18 | |
+
+---
+
+## Revision History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | YYYY-MM-DD | @author | Initial draft |
+`;
+
+// Store treeView reference for forceNavigate and note selection
+let treeViewRef: vscode.TreeView<NoteTreeItem> | undefined;
+let providerRef: NoteProvider | undefined;
+let storageRef: NoteStorage | undefined;
+
+/**
+ * AIDE-0006: Refocus the tree view after operations to prevent focus jumping to editor
+ */
+function refocusTreeView(): void {
+  if (!treeViewRef) return;
+
+  // Use longer delay and reveal with focus to force tree view focus
+  setTimeout(async () => {
+    try {
+      // If there's a selection, reveal it with focus
+      if (treeViewRef!.selection.length > 0) {
+        await treeViewRef!.reveal(treeViewRef!.selection[0], {
+          select: true,
+          focus: true
+        });
+      } else {
+        // Fallback: just focus the view
+        await vscode.commands.executeCommand('adraiReviewNotes.focus');
+      }
+    } catch (e) {
+      // Silently fail
+    }
+  }, 100);
+}
 
 /**
  * Register all commands for the extension
@@ -24,8 +216,12 @@ import { NoteProvider, NoteTreeItem } from './noteProvider';
 export function registerCommands(
   context: vscode.ExtensionContext,
   storage: NoteStorage,
-  provider: NoteProvider
+  provider: NoteProvider,
+  treeView?: vscode.TreeView<NoteTreeItem>
 ): void {
+  treeViewRef = treeView;
+  providerRef = provider;
+  storageRef = storage;
   // Add Note command
   context.subscriptions.push(
     vscode.commands.registerCommand('adrai.addNote', () => addNote(storage))
@@ -90,6 +286,11 @@ export function registerCommands(
     vscode.commands.registerCommand('adrai.searchNotes', () => searchNotes(provider))
   );
 
+  // Clear Search command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.clearSearch', () => clearSearch(provider))
+  );
+
   // Filter by Type command
   context.subscriptions.push(
     vscode.commands.registerCommand('adrai.filterByType', () => filterByType(provider))
@@ -108,15 +309,25 @@ export function registerCommands(
     vscode.commands.registerCommand('adrai.quickNote', () => quickNote(storage))
   );
 
-  // Toggle Branch Filter command
+  // Toggle Branch Filter commands (two entries for different icons)
+  const toggleBranchFilter = () => {
+    const enabled = provider.toggleBranchFilter();
+    // Set context for conditional icon display
+    vscode.commands.executeCommand('setContext', 'adrai.branchFilterActive', enabled);
+    vscode.window.showInformationMessage(
+      enabled ? 'Branch filter enabled - showing current branch notes only' : 'Branch filter disabled - showing all notes'
+    );
+  };
+
   context.subscriptions.push(
-    vscode.commands.registerCommand('adrai.toggleBranchFilter', () => {
-      const enabled = provider.toggleBranchFilter();
-      vscode.window.showInformationMessage(
-        enabled ? 'Branch filter enabled - showing current branch notes only' : 'Branch filter disabled - showing all notes'
-      );
-    })
+    vscode.commands.registerCommand('adrai.toggleBranchFilter', toggleBranchFilter)
   );
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.toggleBranchFilterOff', toggleBranchFilter)
+  );
+
+  // Initialize context for branch filter (read initial state)
+  vscode.commands.executeCommand('setContext', 'adrai.branchFilterActive', provider.isBranchFilterEnabled());
 
   // Remove Location command
   context.subscriptions.push(
@@ -159,22 +370,120 @@ export function registerCommands(
       warnOtherBranch(location, branch)
     )
   );
+
+  // Cycle Sort By command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.cycleSortBy', () => cycleSortBy())
+  );
+
+  // Set Status command (supports multi-selection)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.setStatus', (item?: NoteTreeItem, items?: NoteTreeItem[]) =>
+      setStatus(storage, item, items)
+    )
+  );
+
+  // Force Navigate command (for other-branch notes via CTRL+ALT+Enter)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.forceNavigate', () => forceNavigate(storage))
+  );
+
+  // AIDE-0006: Copy Note command (CTRL+C to copy note content)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.copyNote', () => copyNote())
+  );
+
+  // AIDE-0006: Undo command (CTRL+Z to restore deleted/reverted note)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('adrai.undo', () => undoOperation(storage))
+  );
+}
+
+/**
+ * AIDE-0006: Undo the last delete or update operation
+ * Triggered by CTRL+Z when tree view is focused
+ */
+async function undoOperation(storage: NoteStorage): Promise<void> {
+  if (!storage.canUndo()) {
+    vscode.window.showInformationMessage('Nothing to undo');
+    return;
+  }
+
+  const restored = storage.undo();
+  if (restored) {
+    vscode.window.showInformationMessage(`Restored: ${truncate(restored.content, 40)}`);
+    // Select the restored note in the tree and keep focus
+    selectNoteInTree(restored.id);
+    refocusTreeView();
+  }
+}
+
+/**
+ * AIDE-0006: Copy selected note's content to clipboard
+ * Triggered by CTRL+C when tree view is focused
+ */
+async function copyNote(): Promise<void> {
+  if (!treeViewRef) {
+    return;
+  }
+
+  const selection = treeViewRef.selection;
+  if (selection.length === 0) {
+    vscode.window.showWarningMessage('No note selected');
+    return;
+  }
+
+  const item = selection[0];
+  if (item.itemType !== 'note' && item.itemType !== 'note-other-branch') {
+    return;
+  }
+
+  const note = item.data as ReviewNote;
+  if (note) {
+    await vscode.env.clipboard.writeText(note.content);
+    vscode.window.showInformationMessage(`Copied: ${truncate(note.content, 40)}`);
+    refocusTreeView();
+  }
+}
+
+/**
+ * Force navigate to selected note's location (for other-branch notes)
+ * Triggered by CTRL+ALT+Enter when tree view is focused
+ */
+async function forceNavigate(storage: NoteStorage): Promise<void> {
+  if (!treeViewRef) {
+    return;
+  }
+
+  const selection = treeViewRef.selection;
+  if (selection.length === 0) {
+    vscode.window.showWarningMessage('No note selected');
+    return;
+  }
+
+  const item = selection[0];
+  if (item.itemType !== 'note' && item.itemType !== 'note-other-branch') {
+    return;
+  }
+
+  const note = item.data as ReviewNote;
+  if (note && note.locations.length > 0) {
+    await goToLocation(note.locations[0]);
+  }
 }
 
 /**
  * Add a new review note at the current cursor position
+ * If no editor is open, creates a location-free IDEA note
  */
 async function addNote(storage: NoteStorage): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    vscode.window.showWarningMessage('No active editor. Open a file to add a note.');
-    return;
-  }
+  const hasEditor = !!editor;
 
   // Get note content
   const content = await vscode.window.showInputBox({
-    prompt: 'Enter your review note',
-    placeHolder: 'What do you want to note about this location?',
+    prompt: hasEditor ? 'Enter your review note' : 'Enter your idea (no file location)',
+    placeHolder: hasEditor ? 'What do you want to note about this location?' : 'Capture your idea or insight',
     validateInput: (value) => {
       if (!value || value.trim().length === 0) {
         return 'Note content is required';
@@ -194,6 +503,9 @@ async function addNote(storage: NoteStorage): Promise<void> {
   if (detectedType) {
     // Use detected type directly
     selectedType = { value: detectedType };
+  } else if (!hasEditor) {
+    // No editor: default to idea type
+    selectedType = { value: 'idea' };
   } else {
     // No detection, show type picker (ordered by urgency)
     const typeItems = NOTE_TYPES_ORDERED.map(type => ({
@@ -212,25 +524,48 @@ async function addNote(storage: NoteStorage): Promise<void> {
     selectedType = picked;
   }
 
-  // Create location
-  const document = editor.document;
-  const position = editor.selection.active;
-  const preview = await getLinePreview(document.uri.fsPath, position.line + 1);
+  // Create location (empty array if no editor)
+  // AIDE-0006: Capture selection if text is selected
+  let locations: NoteLocation[] = [];
+  if (hasEditor) {
+    const document = editor.document;
+    const selection = editor.selection;
+    const position = selection.active;
+    const preview = await getLinePreview(document.uri.fsPath, position.line + 1);
 
-  const location: NoteLocation = {
-    file: vscode.workspace.asRelativePath(document.uri),
-    line: position.line + 1, // 1-indexed
-    preview
-  };
+    const location: NoteLocation = {
+      file: vscode.workspace.asRelativePath(document.uri),
+      line: position.line + 1, // 1-indexed
+      preview
+    };
+
+    // AIDE-0006: Store selection if text is selected (not just cursor)
+    if (!selection.isEmpty) {
+      location.selectionStart = {
+        line: selection.start.line + 1, // 1-indexed
+        character: selection.start.character
+      };
+      location.selectionEnd = {
+        line: selection.end.line + 1, // 1-indexed
+        character: selection.end.character
+      };
+    }
+
+    locations = [location];
+  }
 
   // Get current branch
   const currentBranch = await getCurrentBranch();
 
   // Create and save note
-  const note = createNote(content.trim(), selectedType.value, [location], undefined, currentBranch);
+  const note = createNote(content.trim(), selectedType.value, locations, undefined, currentBranch);
   storage.addNote(note);
 
   vscode.window.showInformationMessage(`${NOTE_TYPE_LABELS[selectedType.value]} added: ${truncate(content, 50)}`);
+
+  // Focus the Review Notes panel and select the new note
+  vscode.commands.executeCommand('adraiReviewNotes.focus');
+  selectNoteInTree(note.id);
 }
 
 /**
@@ -242,6 +577,11 @@ async function addLocation(storage: NoteStorage, item?: NoteTreeItem): Promise<v
     vscode.window.showWarningMessage('No active editor. Open a file to add a location.');
     return;
   }
+
+  // AIDE-0006: Capture selection BEFORE any dialogs (dialogs may clear selection)
+  const document = editor.document;
+  const selection = editor.selection;
+  const position = selection.active;
 
   let noteId: string | undefined;
 
@@ -272,9 +612,7 @@ async function addLocation(storage: NoteStorage, item?: NoteTreeItem): Promise<v
     noteId = selected.noteId;
   }
 
-  // Create location
-  const document = editor.document;
-  const position = editor.selection.active;
+  // Create location (selection already captured above)
   const preview = await getLinePreview(document.uri.fsPath, position.line + 1);
 
   // Optionally add section name
@@ -289,6 +627,18 @@ async function addLocation(storage: NoteStorage, item?: NoteTreeItem): Promise<v
     preview,
     section: section || undefined
   };
+
+  // AIDE-0006: Store selection if text is selected (not just cursor)
+  if (!selection.isEmpty) {
+    location.selectionStart = {
+      line: selection.start.line + 1,
+      character: selection.start.character
+    };
+    location.selectionEnd = {
+      line: selection.end.line + 1,
+      character: selection.end.character
+    };
+  }
 
   storage.addLocation(noteId, location);
   vscode.window.showInformationMessage('Location added to note');
@@ -347,10 +697,16 @@ async function promoteToDebate(storage: NoteStorage, item?: NoteTreeItem): Promi
   const debatesPath = path.join(workspaceFolder.uri.fsPath, debatesDir);
   const templatePath = path.join(workspaceFolder.uri.fsPath, templateDir, 'debate-template.md');
 
-  // Check if template exists
-  if (!fs.existsSync(templatePath)) {
-    vscode.window.showErrorMessage(`Debate template not found: ${templatePath}`);
-    return;
+  // AIDE-0007: Use template file if exists, otherwise use built-in default
+  let templateContent: string;
+  if (fs.existsSync(templatePath)) {
+    templateContent = fs.readFileSync(templatePath, 'utf-8');
+  } else {
+    // Use built-in default template and auto-create for future customization
+    templateContent = DEFAULT_DEBATE_TEMPLATE;
+    fs.mkdirSync(path.dirname(templatePath), { recursive: true });
+    fs.writeFileSync(templatePath, templateContent, 'utf-8');
+    vscode.window.showInformationMessage(`Created debate template at ${templatePath}`);
   }
 
   // Get next debate ID from tracker
@@ -375,9 +731,6 @@ async function promoteToDebate(storage: NoteStorage, item?: NoteTreeItem): Promi
   if (confirm !== 'Yes, Create Debate') {
     return;
   }
-
-  // Read template
-  const templateContent = fs.readFileSync(templatePath, 'utf-8');
 
   // Generate debate file name
   const topicSlug = note.content
@@ -417,6 +770,15 @@ async function promoteToDebate(storage: NoteStorage, item?: NoteTreeItem): Promi
   // Write debate file
   fs.writeFileSync(debatePath, debateContent, 'utf-8');
 
+  // Add location pointing to the created debate file
+  const debateLocation: NoteLocation = {
+    file: path.join(debatesDir, debateFileName),
+    line: 1,
+    section: `Promoted to ${nextId}`,
+    preview: `# ${nextId}: ${note.content.substring(0, 50)}`
+  };
+  storage.addLocation(note.id, debateLocation);
+
   // Update note with promotion reference
   storage.updateNote(note.id, {
     promoted_to: nextId,
@@ -429,6 +791,93 @@ async function promoteToDebate(storage: NoteStorage, item?: NoteTreeItem): Promi
   await vscode.window.showTextDocument(document);
 
   vscode.window.showInformationMessage(`Created debate: ${nextId}`);
+}
+
+/**
+ * Set note status via quick pick (supports multi-selection)
+ */
+async function setStatus(storage: NoteStorage, item?: NoteTreeItem, items?: NoteTreeItem[]): Promise<void> {
+  // Gather all selected notes
+  let notes: ReviewNote[] = [];
+
+  // If items array provided (multi-select), use those
+  if (items && items.length > 0) {
+    const noteItems = items.filter(i => i.itemType === 'note' || i.itemType === 'note-other-branch');
+    notes = noteItems.map(i => i.data as ReviewNote).filter(Boolean);
+  } else if (item && (item.itemType === 'note' || item.itemType === 'note-other-branch') && item.data) {
+    notes = [item.data as ReviewNote];
+  } else {
+    // Let user select a note
+    const allNotes = storage.getAllNotes();
+    if (allNotes.length === 0) {
+      vscode.window.showInformationMessage('No notes available.');
+      return;
+    }
+
+    const notePickItems = allNotes.map(n => ({
+      label: truncate(n.content, 60),
+      description: `${NOTE_TYPE_LABELS[n.type]} - ${STATUS_LABELS[n.status]}`,
+      note: n
+    }));
+
+    const selected = await vscode.window.showQuickPick(notePickItems, {
+      placeHolder: 'Select a note to change status'
+    });
+
+    if (!selected) {
+      return;
+    }
+
+    notes = [selected.note];
+  }
+
+  if (notes.length === 0) {
+    vscode.window.showWarningMessage('No notes selected');
+    return;
+  }
+
+  // Show status picker
+  const statusItems: Array<{ label: string; value: NoteStatus; description: string; iconPath?: vscode.ThemeIcon }> = [
+    { label: 'Open', value: 'open', description: 'Newly created, needs attention', iconPath: new vscode.ThemeIcon(STATUS_ICONS.open) },
+    { label: 'Investigating', value: 'investigating', description: 'Being researched/explored', iconPath: new vscode.ThemeIcon(STATUS_ICONS.investigating) },
+    { label: 'Promote', value: 'promote', description: 'Marked for debate promotion', iconPath: new vscode.ThemeIcon(STATUS_ICONS.promote) },
+    { label: 'Resolved', value: 'resolved', description: 'Closed, no longer active', iconPath: new vscode.ThemeIcon(STATUS_ICONS.resolved) }
+  ];
+
+  // For single note, mark current status
+  if (notes.length === 1) {
+    const currentIndex = statusItems.findIndex(s => s.value === notes[0].status);
+    if (currentIndex >= 0) {
+      statusItems[currentIndex].label = `${statusItems[currentIndex].label} (current)`;
+    }
+  }
+
+  const placeHolder = notes.length === 1
+    ? `Current: ${STATUS_LABELS[notes[0].status]} - Select new status`
+    : `Set status for ${notes.length} notes`;
+
+  const selectedStatus = await vscode.window.showQuickPick(statusItems, { placeHolder });
+
+  if (!selectedStatus) {
+    return;
+  }
+
+  // Update all selected notes
+  let updatedCount = 0;
+  for (const note of notes) {
+    if (note.status !== selectedStatus.value) {
+      storage.updateNote(note.id, { status: selectedStatus.value });
+      updatedCount++;
+    }
+  }
+
+  if (updatedCount > 0) {
+    const msg = updatedCount === 1
+      ? `Status changed to ${STATUS_LABELS[selectedStatus.value]}`
+      : `Changed ${updatedCount} notes to ${STATUS_LABELS[selectedStatus.value]}`;
+    vscode.window.showInformationMessage(msg);
+    refocusTreeView();
+  }
 }
 
 /**
@@ -466,17 +915,30 @@ async function resolveNote(storage: NoteStorage, item?: NoteTreeItem): Promise<v
 
   storage.updateNote(noteId, { status: 'resolved' });
   vscode.window.showInformationMessage('Note marked as resolved');
+  refocusTreeView();
 }
 
 /**
  * Edit an existing note
+ * AIDE-0006: F2 keybinding support - uses tree selection if no item passed
  */
 async function editNote(storage: NoteStorage, item?: NoteTreeItem): Promise<void> {
   let note: ReviewNote | undefined;
 
-  if (item && item.itemType === 'note' && item.data) {
+  // AIDE-0006: If no item passed, try to get from tree selection (F2 keybinding)
+  if (!item && treeViewRef) {
+    const selection = treeViewRef.selection;
+    if (selection.length > 0) {
+      const selected = selection[0];
+      if ((selected.itemType === 'note' || selected.itemType === 'note-other-branch') && selected.data) {
+        note = selected.data as ReviewNote;
+      }
+    }
+  } else if (item && (item.itemType === 'note' || item.itemType === 'note-other-branch') && item.data) {
     note = item.data as ReviewNote;
-  } else {
+  }
+
+  if (!note) {
     // Let user select a note
     const notes = storage.getAllNotes().filter(n => n.status !== 'resolved');
     if (notes.length === 0) {
@@ -556,10 +1018,12 @@ async function editNote(storage: NoteStorage, item?: NoteTreeItem): Promise<void
   });
 
   vscode.window.showInformationMessage('Note updated');
+  refocusTreeView();
 }
 
 /**
  * Delete a note
+ * AIDE-0006: No confirmation for single note deletion (fast workflow)
  */
 async function deleteNote(storage: NoteStorage, item?: NoteTreeItem): Promise<void> {
   let noteId: string | undefined;
@@ -595,19 +1059,10 @@ async function deleteNote(storage: NoteStorage, item?: NoteTreeItem): Promise<vo
     noteContent = selected.content;
   }
 
-  // Confirm deletion
-  const confirm = await vscode.window.showWarningMessage(
-    `Delete note: "${truncate(noteContent || '', 40)}"?`,
-    'Delete',
-    'Cancel'
-  );
-
-  if (confirm !== 'Delete') {
-    return;
-  }
-
+  // AIDE-0006: Skip confirmation for single note deletion - use undo instead
   storage.deleteNote(noteId);
-  vscode.window.showInformationMessage('Note deleted');
+  vscode.window.showInformationMessage(`Deleted: ${truncate(noteContent || '', 40)}`);
+  refocusTreeView();
 }
 
 /**
@@ -666,14 +1121,32 @@ async function goToLocation(location?: NoteLocation): Promise<void> {
   const document = await vscode.workspace.openTextDocument(uri);
   const editor = await vscode.window.showTextDocument(document);
 
-  // Go to line
-  const line = Math.max(0, location.line - 1);
-  const position = new vscode.Position(line, 0);
-  editor.selection = new vscode.Selection(position, position);
-  editor.revealRange(
-    new vscode.Range(position, position),
-    vscode.TextEditorRevealType.InCenter
-  );
+  // AIDE-0006: Restore selection if available, otherwise just go to line
+  if (location.selectionStart && location.selectionEnd) {
+    // Restore full selection
+    const startPos = new vscode.Position(
+      location.selectionStart.line - 1, // Convert to 0-indexed
+      location.selectionStart.character
+    );
+    const endPos = new vscode.Position(
+      location.selectionEnd.line - 1, // Convert to 0-indexed
+      location.selectionEnd.character
+    );
+    editor.selection = new vscode.Selection(startPos, endPos);
+    editor.revealRange(
+      new vscode.Range(startPos, endPos),
+      vscode.TextEditorRevealType.InCenter
+    );
+  } else {
+    // Legacy behavior: just go to line
+    const line = Math.max(0, location.line - 1);
+    const position = new vscode.Position(line, 0);
+    editor.selection = new vscode.Selection(position, position);
+    editor.revealRange(
+      new vscode.Range(position, position),
+      vscode.TextEditorRevealType.InCenter
+    );
+  }
 }
 
 /**
@@ -706,6 +1179,7 @@ async function searchNotes(provider: NoteProvider): Promise<void> {
 
   if (query === '') {
     provider.setSearchQuery(undefined);
+    vscode.commands.executeCommand('setContext', 'adrai.searchActive', false);
     vscode.window.showInformationMessage('Search cleared');
   } else {
     // Try the search and check if it finds anything
@@ -717,10 +1191,20 @@ async function searchNotes(provider: NoteProvider): Promise<void> {
     } else {
       // Results found - apply the search
       provider.setSearchQuery(query);
+      vscode.commands.executeCommand('setContext', 'adrai.searchActive', true);
       const filterSummary = provider.getFilterSummary();
       vscode.window.showInformationMessage(`Found ${resultCount} note(s) ${filterSummary}`);
     }
   }
+}
+
+/**
+ * Clear search filter
+ */
+function clearSearch(provider: NoteProvider): void {
+  provider.setSearchQuery(undefined);
+  vscode.commands.executeCommand('setContext', 'adrai.searchActive', false);
+  vscode.window.showInformationMessage('Search cleared');
 }
 
 /**
@@ -753,17 +1237,22 @@ async function filterByType(provider: NoteProvider): Promise<void> {
 }
 
 /**
- * Quick note - create a note with auto-detected type (defaults to bookmark)
+ * Quick note - create a note with auto-detected type (defaults to configured type and status)
+ * If no editor is open, creates a location-free note (defaults to IDEA type)
  */
 async function quickNote(storage: NoteStorage): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    vscode.window.showWarningMessage('No active editor. Open a file to add a quick note.');
-    return;
-  }
+  const hasEditor = !!editor;
+
+  // Get configured defaults
+  const config = vscode.workspace.getConfiguration('adrai');
+  const defaultType = config.get<NoteType>('quickNoteDefaultType', 'bookmark');
+  const defaultStatus = config.get<NoteStatus>('quickNoteDefaultStatus', 'open');
 
   const content = await vscode.window.showInputBox({
-    prompt: 'Quick note (type detected from punctuation: ? ! ~ !!)',
+    prompt: hasEditor
+      ? 'Quick note (type detected from punctuation: + ? ! ~ !!)'
+      : 'Quick idea (no file location, type detected from punctuation: + ? ! ~ !!)',
     placeHolder: 'Enter note content'
   });
 
@@ -771,24 +1260,49 @@ async function quickNote(storage: NoteStorage): Promise<void> {
     return;
   }
 
-  // Auto-detect type, default to bookmark
-  const noteType = detectNoteType(content) || 'bookmark';
+  // Auto-detect type, default to configured type (or 'idea' if no editor)
+  const detectedType = detectNoteType(content);
+  const noteType = detectedType || (hasEditor ? defaultType : 'idea');
 
-  const document = editor.document;
-  const position = editor.selection.active;
-  const preview = await getLinePreview(document.uri.fsPath, position.line + 1);
+  // Create location (empty array if no editor)
+  // AIDE-0006: Capture selection if text is selected
+  let locations: NoteLocation[] = [];
+  if (hasEditor) {
+    const document = editor.document;
+    const selection = editor.selection;
+    const position = selection.active;
+    const preview = await getLinePreview(document.uri.fsPath, position.line + 1);
 
-  const location: NoteLocation = {
-    file: vscode.workspace.asRelativePath(document.uri),
-    line: position.line + 1,
-    preview
-  };
+    const location: NoteLocation = {
+      file: vscode.workspace.asRelativePath(document.uri),
+      line: position.line + 1,
+      preview
+    };
+
+    // AIDE-0006: Store selection if text is selected (not just cursor)
+    if (!selection.isEmpty) {
+      location.selectionStart = {
+        line: selection.start.line + 1, // 1-indexed
+        character: selection.start.character
+      };
+      location.selectionEnd = {
+        line: selection.end.line + 1, // 1-indexed
+        character: selection.end.character
+      };
+    }
+
+    locations = [location];
+  }
 
   const currentBranch = await getCurrentBranch();
-  const note = createNote(content.trim(), noteType, [location], undefined, currentBranch);
+  const note = createNote(content.trim(), noteType, locations, undefined, currentBranch, defaultStatus);
   storage.addNote(note);
 
   vscode.window.showInformationMessage(`${NOTE_TYPE_LABELS[noteType]} added: ${truncate(content, 40)}`);
+
+  // Focus the Review Notes panel and select the new note
+  vscode.commands.executeCommand('adraiReviewNotes.focus');
+  selectNoteInTree(note.id);
 }
 
 /**
@@ -895,6 +1409,7 @@ async function resolveSelected(storage: NoteStorage, items: NoteTreeItem[]): Pro
   }
 
   vscode.window.showInformationMessage(`Resolved ${noteItems.length} note(s)`);
+  refocusTreeView();
 }
 
 /**
@@ -927,6 +1442,7 @@ async function deleteSelected(storage: NoteStorage, items: NoteTreeItem[]): Prom
   }
 
   vscode.window.showInformationMessage(`Deleted ${noteItems.length} note(s)`);
+  refocusTreeView();
 }
 
 /**
@@ -967,6 +1483,7 @@ async function resolveAllInGroup(storage: NoteStorage, provider: NoteProvider, i
   }
 
   vscode.window.showInformationMessage(`Resolved ${resolvedCount} note(s)`);
+  refocusTreeView();
 }
 
 /**
@@ -976,6 +1493,7 @@ async function resolveAllInGroup(storage: NoteStorage, provider: NoteProvider, i
  *   - `?` at end → Question
  *   - `!` at end → Concern
  *   - `~` at end → Uncertainty
+ *   - `+` at end → Idea
  *   - No special punctuation → Show type picker (return undefined)
  */
 function detectNoteType(content: string): NoteType | undefined {
@@ -999,6 +1517,10 @@ function detectNoteType(content: string): NoteType | undefined {
     return 'uncertainty';
   }
 
+  if (trimmed.endsWith('+')) {
+    return 'idea';
+  }
+
   // No special punctuation - return undefined to show type picker
 
   return undefined; // Let user choose
@@ -1009,6 +1531,8 @@ function detectNoteType(content: string): NoteType | undefined {
  */
 function getTypeDescription(type: NoteType): string {
   switch (type) {
+    case 'idea':
+      return 'Capture a new idea or insight';
     case 'question':
       return 'Need answer or clarification';
     case 'uncertainty':
@@ -1032,4 +1556,67 @@ function truncate(text: string, maxLength: number): string {
     return text;
   }
   return text.substring(0, maxLength - 3) + '...';
+}
+
+/**
+ * Cycle through sort modes: date ↓ → date ↑ → type/status ↓ → type/status ↑ → date ↓
+ * Uses type when grouped by status, status when grouped by type
+ */
+async function cycleSortBy(): Promise<void> {
+  const config = vscode.workspace.getConfiguration('adrai');
+  const currentSortBy = config.get<string>('sortBy', 'date');
+  const currentOrder = config.get<string>('sortOrder', 'desc');
+  const groupBy = config.get<string>('groupBy', 'status');
+
+  // Determine the alternative sort (not date)
+  const altSort = groupBy === 'type' ? 'status' : 'type';
+
+  let newSortBy: string = currentSortBy;
+  let newOrder: string;
+
+  // Cycle: date desc → date asc → alt desc → alt asc → date desc
+  if (currentOrder === 'desc') {
+    newOrder = 'asc';
+  } else {
+    newOrder = 'desc';
+    newSortBy = currentSortBy === 'date' ? altSort : 'date';
+  }
+
+  await config.update('sortBy', newSortBy, true);
+  await config.update('sortOrder', newOrder, true);
+
+  const orderLabel = newOrder === 'desc' ? '↓' : '↑';
+  vscode.window.showInformationMessage(`Sort: ${newSortBy} ${orderLabel}`);
+}
+
+/**
+ * Select a note in the tree view by ID
+ * Uses a short delay to allow the tree to refresh after note creation
+ */
+function selectNoteInTree(noteId: string): void {
+  if (!treeViewRef || !providerRef || !storageRef) {
+    return;
+  }
+
+  // Small delay to let the tree refresh
+  setTimeout(async () => {
+    try {
+      const note = storageRef!.getNote(noteId);
+      if (!note) return;
+
+      // Create a temporary tree item to reveal
+      const item = new NoteTreeItem(
+        note.content.substring(0, 50),
+        vscode.TreeItemCollapsibleState.None,
+        'note',
+        note,
+        note.id
+      );
+
+      await treeViewRef!.reveal(item, { select: true, focus: false });
+    } catch (error) {
+      // Silently fail if reveal doesn't work
+      console.log('Could not reveal note:', error);
+    }
+  }, 100);
 }

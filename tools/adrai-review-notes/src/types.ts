@@ -1,5 +1,5 @@
 /**
- * adrAI Review Notes - Type Definitions
+ * adrai Review Notes - Type Definitions
  *
  * Core data structures for the review annotation system.
  */
@@ -8,7 +8,8 @@
  * Type of review note - ordered by urgency (low to high)
  */
 export type NoteType =
-  | 'bookmark'      // Come back to this later (lowest urgency)
+  | 'idea'          // Capture a new idea or insight (lowest urgency)
+  | 'bookmark'      // Come back to this later
   | 'uncertainty'   // Not sure yet, need more context
   | 'question'      // Need answer/clarification
   | 'concern'       // Potential issue to investigate
@@ -18,6 +19,7 @@ export type NoteType =
  * Note types in urgency order (low to high) - use for UI ordering
  */
 export const NOTE_TYPES_ORDERED: NoteType[] = [
+  'idea',
   'bookmark',
   'uncertainty',
   'question',
@@ -35,6 +37,16 @@ export type NoteStatus =
   | 'resolved';     // Closed, no longer active
 
 /**
+ * Position in a file (line and character)
+ */
+export interface FilePosition {
+  /** 1-indexed line number */
+  line: number;
+  /** 0-indexed character offset */
+  character: number;
+}
+
+/**
  * A specific location in a file that a note references
  */
 export interface NoteLocation {
@@ -46,6 +58,10 @@ export interface NoteLocation {
   section?: string;
   /** Preview of the text at this location */
   preview?: string;
+  /** AIDE-0006: Selection start position (if text was selected) */
+  selectionStart?: FilePosition;
+  /** AIDE-0006: Selection end position (if text was selected) */
+  selectionEnd?: FilePosition;
 }
 
 /**
@@ -102,9 +118,10 @@ export interface AdtsConfiguration {
  * Icons for each note type (VS Code Codicons)
  */
 export const NOTE_TYPE_ICONS: Record<NoteType, string> = {
+  'idea': 'lightbulb',
   'bookmark': 'bookmark',
-  'uncertainty': 'question',
-  'question': 'search',
+  'uncertainty': 'search',
+  'question': 'question',
   'concern': 'warning',
   'pre-debate': 'flame'
 };
@@ -113,6 +130,7 @@ export const NOTE_TYPE_ICONS: Record<NoteType, string> = {
  * Display labels for note types
  */
 export const NOTE_TYPE_LABELS: Record<NoteType, string> = {
+  'idea': 'Idea',
   'bookmark': 'Bookmark',
   'uncertainty': 'Uncertainty',
   'question': 'Question',
@@ -152,3 +170,22 @@ export const DEFAULT_STORAGE: ReviewNotesStorage = {
  * Current schema version
  */
 export const CURRENT_SCHEMA_VERSION = '1.1';
+
+/**
+ * AIDE-0006: Undo stack entry for reversible operations
+ */
+export interface UndoEntry {
+  /** Operation type */
+  operation: 'delete' | 'update';
+  /** Note ID that was affected */
+  noteId: string;
+  /** Snapshot of note before the operation */
+  snapshot: ReviewNote;
+  /** When operation occurred */
+  timestamp: string;
+}
+
+/**
+ * AIDE-0006: Maximum undo stack size
+ */
+export const MAX_UNDO_ENTRIES = 20;

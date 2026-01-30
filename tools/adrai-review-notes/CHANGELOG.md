@@ -1,9 +1,74 @@
 # Changelog
 
-All notable changes to the "adrAI Review Notes" extension will be documented in this file.
+All notable changes to the "adrai Review Notes" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.8.2] - 2026-01-30
+
+### Added
+
+- **Debate Location Link**: Promoting a note to debate adds a location pointing to the created DEB file [AIDE-0007]
+  - Enables bidirectional navigation between note and debate
+
+## [0.8.1] - 2026-01-30
+
+### Fixed
+
+- **Debate Template Handling**: Built-in default template for debate promotion [AIDE-0007]
+  - No longer requires template file to exist
+  - Auto-creates template at `docs/debates/templates/debate-template.md` on first use
+  - Clean template without copy instructions or code fences
+
+## [0.8.0] - 2026-01-30
+
+### Added
+
+- **Undo Support**: CTRL+Z to restore deleted notes or revert changes [AIDE-0006]
+  - Undo stack holds up to 20 operations
+  - Works for delete and update operations
+- **Copy Note**: CTRL+C copies selected note text to clipboard [AIDE-0006]
+- **F2 to Edit**: Standard keyboard shortcut for editing notes [AIDE-0006]
+- **Selection Storage**: Notes now capture text selection, not just cursor position [AIDE-0006]
+  - Selection restored when navigating to note location
+  - Backwards compatible with cursor-only notes
+- **Project Storage**: Optional per-project note storage [AIDE-0006]
+  - Enable via `adrai.projectStorage` setting
+  - Notes stored in `~/.adrai/[project-name]/review-notes.yaml`
+  - Storage path updates automatically when setting changes
+- **About Section**: Settings panel now includes sprantic branding, GitHub link, and MIT license
+
+### Changed
+
+- **No Confirmation for Single Delete**: Single note deletion is instant (use CTRL+Z to undo) [AIDE-0006]
+  - Multi-select delete still shows confirmation
+- **Git-Aware Branch Toggle**: Branch filter button only visible in git repositories [AIDE-0006]
+- **Git Settings Hidden**: Branch-related settings hidden in non-git workspaces
+- **View Title**: Updated to "ADRAI REVIEW NOTES" for clarity
+- **Settings Title**: Updated to "adrai Review Notes Settings"
+
+### Known Issues
+
+- **Focus after tree operations**: Focus may jump back to editor after panel operations (delete, edit, status change). Workaround: manually click back into the panel.
+
+## [0.7.0] - 2026-01-30
+
+### Added
+
+- **IDEA Note Type**: New lowest-urgency note type with lightbulb icon [AIDE-0005]
+  - Punctuation detection: `+` at end auto-detects as Idea
+  - Urgency order: idea → bookmark → uncertainty → question → concern → pre-debate
+- **Global Keybindings**: Commands work without requiring an open editor
+  - `Ctrl+Shift+N` and `Ctrl+Shift+B` now work from anywhere in VS Code
+- **Location-Free Notes**: IDEA notes can be created without a file location
+  - When keybinding triggered without open editor, defaults to IDEA type
+  - Enables capturing ideas from anywhere in VS Code
+
+### Changed
+
+- Keybindings no longer require `editorTextFocus` context
+- Quick Note default type now includes 'idea' option in settings
 
 ## [0.2.7] - 2026-01-29
 
@@ -89,7 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Custom SVG icon matching the adrAI branding (book with checkbox and AI)
+- Custom SVG icon matching the adrai branding (book with checkbox and AI)
 
 ## [0.1.2] - 2026-01-29
 

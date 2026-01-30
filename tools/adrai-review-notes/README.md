@@ -1,6 +1,16 @@
-# adrAI Review Notes
+# adrai Review Notes
 
-Personal annotation layer for adrAI artifact review with debate promotion.
+<p align="center">
+  <strong>Personal annotation layer for adrai artifact review with debate promotion</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/sprantic/adrai">GitHub</a> |
+  <a href="https://github.com/sprantic/adrai/blob/main/LICENSE">MIT License</a> |
+  by <a href="https://sprantic.ai">sprantic</a>
+</p>
+
+---
 
 ## The Problem
 
@@ -21,25 +31,6 @@ This VS Code extension provides:
 - **Personal storage** in `~/.adrai/review-notes.yaml` (gitignored)
 - **Promotion workflow** to create DEB-NNNN from notes
 
-## Installation
-
-### From Source (Development)
-
-```bash
-cd tools/adrai-review-notes
-bun install
-bun run compile
-```
-
-Then press F5 in VS Code to launch Extension Development Host.
-
-### Package and Install
-
-```bash
-bun run package
-code --install-extension adrai-review-notes-0.1.0.vsix
-```
-
 ## Usage
 
 ### Keyboard Shortcuts
@@ -54,6 +45,7 @@ code --install-extension adrai-review-notes-0.1.0.vsix
 
 | Type | Icon | Use When |
 |------|------|----------|
+| Idea | 💡 | Capture a new idea or insight |
 | Question | 🔍 | Need answer/clarification |
 | Uncertainty | ❓ | Not sure yet, need more context |
 | Concern | ⚠️ | Potential issue to investigate |
@@ -99,6 +91,8 @@ When a note warrants formal discussion:
 4. Pre-fills the central question from note content
 5. Links all note locations as context
 6. Marks the note as resolved with `promoted_to: DEB-NNNN`
+
+🏗️ *This function is currently incomplete and just a teaser for the collaborative support of adrai* 🏗️
 
 ## Configuration
 
@@ -150,14 +144,14 @@ All commands are available via Command Palette (`Ctrl+Shift+P`):
 
 | Command | Description |
 |---------|-------------|
-| `adrAI: Add Review Note` | Create note at cursor |
-| `adrAI: Add Location to Note` | Link location to existing note |
-| `adrAI: Toggle Review Notes Panel` | Show/focus the sidebar |
-| `adrAI: Promote to Debate` | Create DEB-NNNN from note |
-| `adrAI: Resolve Note` | Mark note as resolved |
-| `adrAI: Edit Note` | Edit note content, type, or status |
-| `adrAI: Delete Note` | Remove a note |
-| `adrAI: Refresh Notes` | Reload notes from storage |
+| `adrai: Add Review Note` | Create note at cursor |
+| `adrai: Add Location to Note` | Link location to existing note |
+| `adrai: Toggle Review Notes Panel` | Show/focus the sidebar |
+| `adrai: Promote to Debate` | Create DEB-NNNN from note |
+| `adrai: Resolve Note` | Mark note as resolved |
+| `adrai: Edit Note` | Edit note content, type, or status |
+| `adrai: Delete Note` | Remove a note |
+| `adrai: Refresh Notes` | Reload notes from storage |
 
 ## Context Menu
 
@@ -175,42 +169,21 @@ Right-click in the editor for:
 
 The status bar shows the count of open notes. Click to focus the panel.
 
-## Development
+## Integration with adrai
 
-### Building
-
-```bash
-bun install
-bun run compile
-```
-
-### Watching
-
-```bash
-bun run watch
-```
-
-### Testing
-
-Press F5 in VS Code to launch the Extension Development Host.
-
-### Packaging
-
-```bash
-bun run package
-```
-
-## Integration with adrAI
-
-This extension is part of the adrAI (AIDE Debate Tracking System):
+This extension is part of the adrai (AIDE Notes Review Lifecycle Management System):
 
 - Notes capture fleeting thoughts during artifact review
 - Multi-location linking connects related code/docs
 - Promotion workflow creates formal debates when warranted
 - Personal storage keeps notes out of version control
 
-See the adrAI project documentation for the full system design.
+See the adrai project documentation for the full system design.
 
 ## License
 
-MIT (c) 2026 sprantic GmbH
+<p align="center">MIT (c) 2026</p>
+<p align="center"><a href="https://sprantic.ai">sprantic GmbH</a></p>
+<p align="center">
+  <img src="https://sprantic.ai/sprantic-dark.png" alt="adrai Review Notes" width="128" height="128">
+</p>

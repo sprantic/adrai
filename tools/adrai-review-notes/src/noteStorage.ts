@@ -1,5 +1,5 @@
 /**
- * adrAI Review Notes - Storage Module
+ * adrai Review Notes - Storage Module
  *
  * Handles reading and writing review notes to ~/.adrai/review-notes.yaml
  */
@@ -15,8 +15,10 @@ import {
   NoteLocation,
   NoteType,
   NoteStatus,
+  UndoEntry,
   DEFAULT_STORAGE,
-  CURRENT_SCHEMA_VERSION
+  CURRENT_SCHEMA_VERSION,
+  MAX_UNDO_ENTRIES
 } from './types';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -31,18 +33,61 @@ export class NoteStorage {
   private cache: ReviewNotesStorage | null = null;
   private watcher: fs.FSWatcher | null = null;
   private onChangeCallbacks: Array<() => void> = [];
+  // AIDE-0006: Undo stack for reversible operations
+  private undoStack: UndoEntry[] = [];
+  private configWatcher: vscode.Disposable | null = null;
 
   constructor() {
     this.storagePath = this.resolveStoragePath();
     this.ensureStorageDirectory();
     this.setupFileWatcher();
+    this.setupConfigWatcher();
+  }
+
+  /**
+   * AIDE-0006: Watch for config changes that affect storage path
+   */
+  private setupConfigWatcher(): void {
+    this.configWatcher = vscode.workspace.onDidChangeConfiguration(e => {
+      if (e.affectsConfiguration('adrai.projectStorage') || e.affectsConfiguration('adrai.storageLocation')) {
+        // Re-resolve storage path and reload
+        const newPath = this.resolveStoragePath();
+        if (newPath !== this.storagePath) {
+          console.log(`[adrai] Storage path changed: ${this.storagePath} -> ${newPath}`);
+          this.storagePath = newPath;
+          this.cache = null;
+          this.ensureStorageDirectory();
+          // Update file watcher
+          if (this.watcher) {
+            this.watcher.close();
+          }
+          this.setupFileWatcher();
+          this.notifyChange();
+        }
+      }
+    });
   }
 
   /**
    * Resolve the storage path from config, expanding ~ to home directory
+   * AIDE-0006: Support project-qualified paths when projectStorage is enabled
    */
   private resolveStoragePath(): string {
     const config = vscode.workspace.getConfiguration('adrai');
+    const projectStorage = config.get<boolean>('projectStorage', false);
+
+    // AIDE-0006: If projectStorage enabled, use project-specific path
+    if (projectStorage) {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (workspaceFolder) {
+        const projectName = path.basename(workspaceFolder.uri.fsPath);
+        // Sanitize project name for file system
+        const safeProjectName = projectName.replace(/[^a-zA-Z0-9_-]/g, '_');
+        return path.join(os.homedir(), '.adrai', safeProjectName, 'review-notes.yaml');
+      }
+    }
+
+    // Default: use configured path
     let storagePath = config.get<string>('storageLocation', '~/.adrai/review-notes.yaml');
 
     // Expand ~ to home directory
@@ -199,6 +244,7 @@ export class NoteStorage {
 
   /**
    * Update an existing note
+   * AIDE-0006: Captures snapshot for undo
    */
   public updateNote(id: string, updates: Partial<ReviewNote>): void {
     const storage = this.load();
@@ -207,6 +253,9 @@ export class NoteStorage {
     if (index === -1) {
       throw new Error(`Note with ID ${id} not found`);
     }
+
+    // AIDE-0006: Capture snapshot before update for undo
+    this.pushUndo('update', storage.notes[index]);
 
     storage.notes[index] = {
       ...storage.notes[index],
@@ -220,6 +269,7 @@ export class NoteStorage {
 
   /**
    * Delete a note
+   * AIDE-0006: Captures snapshot for undo
    */
   public deleteNote(id: string): void {
     const storage = this.load();
@@ -228,6 +278,9 @@ export class NoteStorage {
     if (index === -1) {
       throw new Error(`Note with ID ${id} not found`);
     }
+
+    // AIDE-0006: Capture snapshot before delete for undo
+    this.pushUndo('delete', storage.notes[index]);
 
     storage.notes.splice(index, 1);
     this.save(storage);
@@ -293,7 +346,77 @@ export class NoteStorage {
     if (this.watcher) {
       this.watcher.close();
     }
+    if (this.configWatcher) {
+      this.configWatcher.dispose();
+    }
     this.onChangeCallbacks = [];
+    this.undoStack = [];
+  }
+
+  /**
+   * AIDE-0006: Push an entry onto the undo stack
+   */
+  private pushUndo(operation: 'delete' | 'update', note: ReviewNote): void {
+    // Deep clone the note to preserve its state
+    const snapshot = JSON.parse(JSON.stringify(note));
+
+    this.undoStack.push({
+      operation,
+      noteId: note.id,
+      snapshot,
+      timestamp: new Date().toISOString()
+    });
+
+    // Limit stack size
+    if (this.undoStack.length > MAX_UNDO_ENTRIES) {
+      this.undoStack.shift();
+    }
+  }
+
+  /**
+   * AIDE-0006: Undo the last operation
+   * Returns the restored/reverted note, or undefined if nothing to undo
+   */
+  public undo(): ReviewNote | undefined {
+    const entry = this.undoStack.pop();
+    if (!entry) {
+      return undefined;
+    }
+
+    const storage = this.load();
+
+    if (entry.operation === 'delete') {
+      // Restore deleted note
+      storage.notes.push(entry.snapshot);
+    } else if (entry.operation === 'update') {
+      // Revert to previous state
+      const index = storage.notes.findIndex(note => note.id === entry.noteId);
+      if (index !== -1) {
+        storage.notes[index] = entry.snapshot;
+      } else {
+        // Note was deleted after update, restore it
+        storage.notes.push(entry.snapshot);
+      }
+    }
+
+    this.save(storage);
+    this.notifyChange();
+
+    return entry.snapshot;
+  }
+
+  /**
+   * AIDE-0006: Check if there are entries in the undo stack
+   */
+  public canUndo(): boolean {
+    return this.undoStack.length > 0;
+  }
+
+  /**
+   * AIDE-0006: Get the number of entries in the undo stack
+   */
+  public getUndoCount(): number {
+    return this.undoStack.length;
   }
 
   /**
@@ -337,14 +460,15 @@ export function createNote(
   type: NoteType,
   locations: NoteLocation[],
   tags?: string[],
-  branch?: string
+  branch?: string,
+  status: NoteStatus = 'open'
 ): ReviewNote {
   const now = new Date().toISOString();
   return {
     id: generateId(),
     content,
     type,
-    status: 'open',
+    status,
     created: now,
     updated: now,
     locations,
@@ -387,6 +511,25 @@ export async function branchExists(branchName: string): Promise<boolean> {
       cwd: workspaceFolder.uri.fsPath
     });
     return stdout.trim().length > 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * AIDE-0006: Check if current workspace is a git repository
+ */
+export async function isGitRepository(): Promise<boolean> {
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) {
+    return false;
+  }
+
+  try {
+    await execAsync('git rev-parse --is-inside-work-tree', {
+      cwd: workspaceFolder.uri.fsPath
+    });
+    return true;
   } catch {
     return false;
   }

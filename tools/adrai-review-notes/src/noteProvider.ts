@@ -1,5 +1,5 @@
 /**
- * adrAI Review Notes - TreeView Data Provider
+ * adrai Review Notes - TreeView Data Provider
  *
  * Provides data for the VS Code sidebar panel showing review notes.
  */
@@ -58,9 +58,18 @@ export interface FilterState {
 }
 
 /**
- * TreeDataProvider for the Review Notes panel
+ * MIME type for internal note drag/drop
  */
-export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
+const NOTE_DRAG_MIME_TYPE = 'application/vnd.code.tree.adraireviewnotesnote';
+
+/**
+ * TreeDataProvider for the Review Notes panel
+ * Also implements TreeDragAndDropController for status changes via drag/drop
+ */
+export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem>, vscode.TreeDragAndDropController<NoteTreeItem> {
+  // Drag and drop configuration
+  readonly dragMimeTypes = [NOTE_DRAG_MIME_TYPE];
+  readonly dropMimeTypes = [NOTE_DRAG_MIME_TYPE];
   private _onDidChangeTreeData = new vscode.EventEmitter<NoteTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
@@ -68,28 +77,32 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
   private currentBranch: string | undefined;
   private filterState: FilterState = { branchFilterEnabled: false };
 
+  // Display options
+  private showLocation: boolean = true;
+  private showBranch: boolean = true;
+  private showDate: boolean = false;
+
+  // Sort options
+  private sortBy: 'date' | 'type' | 'status' = 'date';
+  private sortOrder: 'asc' | 'desc' = 'desc';
+
+  // Icon display
+  private showNoteIcons: boolean = true;
+
   constructor(private storage: NoteStorage) {
     // Listen for storage changes
     storage.onChange(() => this.refresh());
 
     // Listen for config changes
     vscode.workspace.onDidChangeConfiguration(e => {
-      if (e.affectsConfiguration('adrai.groupBy')) {
-        const config = vscode.workspace.getConfiguration('adrai');
-        this.groupBy = config.get<'status' | 'type' | 'file'>('groupBy', 'status');
-        this.refresh();
-      }
-      if (e.affectsConfiguration('adrai.branchFilter')) {
-        const config = vscode.workspace.getConfiguration('adrai');
-        this.filterState.branchFilterEnabled = config.get<boolean>('branchFilter', false);
+      if (e.affectsConfiguration('adrai')) {
+        this.loadConfig();
         this.refresh();
       }
     });
 
     // Load initial config
-    const config = vscode.workspace.getConfiguration('adrai');
-    this.groupBy = config.get<'status' | 'type' | 'file'>('groupBy', 'status');
-    this.filterState.branchFilterEnabled = config.get<boolean>('branchFilter', false);
+    this.loadConfig();
 
     // Get current branch
     this.updateCurrentBranch();
@@ -125,6 +138,22 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     } catch (error) {
       console.log('Git extension not available, branch watching disabled');
     }
+  }
+
+  /**
+   * Load configuration values
+   */
+  private loadConfig(): void {
+    const config = vscode.workspace.getConfiguration('adrai');
+    this.groupBy = config.get<'status' | 'type' | 'file'>('groupBy', 'status');
+    this.filterState.branchFilterEnabled = config.get<boolean>('branchFilter', false);
+    this.showLocation = config.get<boolean>('showLocation', true);
+    this.showBranch = config.get<boolean>('showBranch', true);
+    this.showDate = config.get<boolean>('showDate', false);
+    this.sortBy = config.get<'date' | 'type' | 'status'>('sortBy', 'date');
+    this.sortOrder = config.get<'asc' | 'desc'>('sortOrder', 'desc');
+    this.showNoteIcons = config.get<boolean>('showNoteIcons', true);
+    console.log('[adrai] loadConfig: showNoteIcons =', this.showNoteIcons);
   }
 
   /**
@@ -413,13 +442,16 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
   /**
    * Get notes belonging to a group
    */
-  private getNotesInGroup(groupLabel: string): NoteTreeItem[] {
+  private getNotesInGroup(groupLabel: string | vscode.TreeItemLabel): NoteTreeItem[] {
     const notes = this.getFilteredNotes();
     let filteredNotes: ReviewNote[];
 
+    // Handle TreeItemLabel or string
+    const labelStr = typeof groupLabel === 'string' ? groupLabel : groupLabel.label;
+
     // Parse the group label to extract the key (remove count)
-    const labelMatch = groupLabel.match(/^(.+?)\s*\(\d+\)$/);
-    const key = labelMatch ? labelMatch[1] : groupLabel;
+    const labelMatch = labelStr.match(/^(.+?)\s*\(\d+\)$/);
+    const key = labelMatch ? labelMatch[1] : labelStr;
 
     switch (this.groupBy) {
       case 'status':
@@ -447,7 +479,74 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
         filteredNotes = [];
     }
 
+    // Sort notes based on settings
+    filteredNotes = this.sortNotes(filteredNotes);
+
     return filteredNotes.map(note => this.createNoteItem(note));
+  }
+
+  /**
+   * Get the icon to display for a note based on settings
+   * - When showNoteIcons is false: no icons on notes
+   * - When grouped by status: show type icons
+   * - When grouped by type or file: show status icons
+   * Returns undefined for no icon
+   */
+  private getNoteIcon(note: ReviewNote): string | undefined {
+    console.log('[adrai] getNoteIcon called, showNoteIcons:', this.showNoteIcons);
+    if (!this.showNoteIcons) {
+      console.log('[adrai] Returning undefined (icons disabled)');
+      return undefined;
+    }
+
+    // Show the "other" dimension: type icons for status grouping, status icons otherwise
+    if (this.groupBy === 'status') {
+      return NOTE_TYPE_ICONS[note.type];
+    }
+    return STATUS_ICONS[note.status];
+  }
+
+  /**
+   * Sort notes based on sortBy and sortOrder settings
+   * Contextual: when grouped by status, type sort is valid; when grouped by type, status sort is valid
+   */
+  private sortNotes(notes: ReviewNote[]): ReviewNote[] {
+    const sorted = [...notes].sort((a, b) => {
+      let comparison = 0;
+
+      // Determine effective sort - avoid sorting by same dimension as grouping
+      let effectiveSort = this.sortBy;
+      if (this.groupBy === 'status' && this.sortBy === 'status') {
+        effectiveSort = 'type'; // Fall back to type when grouped by status
+      } else if (this.groupBy === 'type' && this.sortBy === 'type') {
+        effectiveSort = 'status'; // Fall back to status when grouped by type
+      }
+
+      switch (effectiveSort) {
+        case 'date':
+          comparison = new Date(a.created).getTime() - new Date(b.created).getTime();
+          break;
+
+        case 'type':
+          // Sort by urgency order (NOTE_TYPES_ORDERED)
+          const aTypeIndex = NOTE_TYPES_ORDERED.indexOf(a.type);
+          const bTypeIndex = NOTE_TYPES_ORDERED.indexOf(b.type);
+          comparison = aTypeIndex - bTypeIndex;
+          break;
+
+        case 'status':
+          // Sort by status order: open, investigating, promote, resolved
+          const statusOrder: NoteStatus[] = ['open', 'investigating', 'promote', 'resolved'];
+          const aStatusIndex = statusOrder.indexOf(a.status);
+          const bStatusIndex = statusOrder.indexOf(b.status);
+          comparison = aStatusIndex - bStatusIndex;
+          break;
+      }
+
+      return this.sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return sorted;
   }
 
   /**
@@ -477,53 +576,58 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     const filterMode = this.filterState.branchFilterEnabled ? 'filtered' : 'all';
     item.resourceUri = vscode.Uri.parse(`adrai-note://${branchFlag}.${filterMode}/${note.id}`);
 
-    item.iconPath = new vscode.ThemeIcon(NOTE_TYPE_ICONS[note.type]);
+    // Determine which icon to show based on settings
+    const iconName = this.getNoteIcon(note);
+    if (iconName) {
+      item.iconPath = new vscode.ThemeIcon(iconName);
+    }
+    // Note: When iconName is undefined (none mode), we don't set iconPath.
+    // VS Code will show no icon. The resourceUri above is for text coloring only.
     item.tooltip = this.createNoteTooltip(note);
 
-    // Build description parts
-    let description = '';
+    // Build description parts based on display settings
+    const descParts: string[] = [];
 
-    // Show branch badge for notes from other branches
-    if (!isCurrentBranch && note.branch) {
-      description = `[${note.branch}] `;
-    }
-
-    // Show primary location as description
-    if (note.locations.length > 0) {
-      const loc = note.locations[0];
-      description += `${path.basename(loc.file)}:${loc.line}`;
-      if (note.locations.length > 1) {
-        description += ` (+${note.locations.length - 1})`;
-      }
-    }
-
-    // Show promoted status
+    // Show promoted status (always visible if present)
     if (note.promoted_to) {
-      description = `[${note.promoted_to}] ` + description;
+      descParts.push(`[${note.promoted_to}]`);
     }
 
-    item.description = description;
+    // Show branch badge for notes from other branches (if enabled)
+    if (this.showBranch && !isCurrentBranch && note.branch) {
+      descParts.push(`[${note.branch}]`);
+    }
+
+    // Show primary location (if enabled)
+    if (this.showLocation && note.locations.length > 0) {
+      const loc = note.locations[0];
+      let locStr = `${path.basename(loc.file)}:${loc.line}`;
+      if (note.locations.length > 1) {
+        locStr += ` (+${note.locations.length - 1})`;
+      }
+      descParts.push(locStr);
+    }
+
+    // Show creation date (if enabled)
+    if (this.showDate) {
+      const date = new Date(note.created);
+      descParts.push(date.toLocaleDateString());
+    }
+
+    item.description = descParts.join(' ');
 
     // Set context based on branch
     item.contextValue = isCurrentBranch ? 'note' : 'note-other-branch';
 
     // If single location, make clickable
-    if (note.locations.length === 1) {
-      if (isCurrentBranch) {
-        // Current branch - navigate directly
-        item.command = {
-          command: 'adrai.goToLocation',
-          title: 'Go to Location',
-          arguments: [note.locations[0]]
-        };
-      } else {
-        // Other branch - show warning with option to navigate
-        item.command = {
-          command: 'adrai.warnOtherBranch',
-          title: 'Other Branch Note',
-          arguments: [note.locations[0], note.branch]
-        };
-      }
+    // Current branch: click navigates directly
+    // Other branch: click selects only, use CTRL+ALT+Enter to navigate
+    if (note.locations.length === 1 && isCurrentBranch) {
+      item.command = {
+        command: 'adrai.goToLocation',
+        title: 'Go to Location',
+        arguments: [note.locations[0]]
+      };
     }
 
     return item;
@@ -641,6 +745,116 @@ export class NoteProvider implements vscode.TreeDataProvider<NoteTreeItem> {
     }
 
     return staleLocations;
+  }
+
+  /**
+   * Handle drag start - pack note IDs into data transfer
+   */
+  handleDrag(source: readonly NoteTreeItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void {
+    // Only allow dragging notes (not groups or locations)
+    const noteItems = source.filter(item => item.itemType === 'note' || item.itemType === 'note-other-branch');
+    if (noteItems.length === 0) {
+      return;
+    }
+
+    // Pack note IDs
+    const noteIds = noteItems.map(item => item.noteId).filter(Boolean);
+    dataTransfer.set(NOTE_DRAG_MIME_TYPE, new vscode.DataTransferItem(JSON.stringify(noteIds)));
+  }
+
+  /**
+   * Handle drop - change note status/type when dropped on a group or note
+   */
+  async handleDrop(target: NoteTreeItem | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Promise<void> {
+    // Only handle drops when grouping by status or type
+    if (this.groupBy !== 'status' && this.groupBy !== 'type') {
+      vscode.window.showWarningMessage('Drag & drop only works when grouped by status or type');
+      return;
+    }
+
+    // Target must be a group or a note
+    if (!target) {
+      return;
+    }
+
+    // Get the note IDs from data transfer
+    const data = dataTransfer.get(NOTE_DRAG_MIME_TYPE);
+    if (!data) {
+      return;
+    }
+
+    let noteIds: string[];
+    try {
+      noteIds = JSON.parse(await data.asString());
+    } catch {
+      return;
+    }
+
+    // Determine target value based on groupBy mode
+    let newStatus: NoteStatus | undefined;
+    let newType: NoteType | undefined;
+
+    const labelStr = target.itemType === 'group'
+      ? (typeof target.label === 'string' ? target.label : target.label?.label || '')
+      : '';
+    const labelMatch = labelStr.match(/^(.+?)\s*\(\d+\)$/);
+    const groupLabel = labelMatch ? labelMatch[1] : labelStr;
+
+    if (this.groupBy === 'status') {
+      if (target.itemType === 'group') {
+        const statusEntry = Object.entries(STATUS_LABELS).find(([_, label]) => label === groupLabel);
+        if (statusEntry) {
+          newStatus = statusEntry[0] as NoteStatus;
+        }
+      } else if (target.itemType === 'note' || target.itemType === 'note-other-branch') {
+        const targetNote = target.data as ReviewNote;
+        if (targetNote) {
+          newStatus = targetNote.status;
+        }
+      }
+    } else if (this.groupBy === 'type') {
+      if (target.itemType === 'group') {
+        const typeEntry = Object.entries(NOTE_TYPE_LABELS).find(([_, label]) => label === groupLabel);
+        if (typeEntry) {
+          newType = typeEntry[0] as NoteType;
+        }
+      } else if (target.itemType === 'note' || target.itemType === 'note-other-branch') {
+        const targetNote = target.data as ReviewNote;
+        if (targetNote) {
+          newType = targetNote.type;
+        }
+      }
+    }
+
+    if (!newStatus && !newType) {
+      return;
+    }
+
+    // Update all dragged notes
+    let updatedCount = 0;
+    for (const noteId of noteIds) {
+      try {
+        const note = this.storage.getNote(noteId);
+        if (!note) continue;
+
+        if (newStatus && note.status !== newStatus) {
+          this.storage.updateNote(noteId, { status: newStatus });
+          updatedCount++;
+        } else if (newType && note.type !== newType) {
+          this.storage.updateNote(noteId, { type: newType });
+          updatedCount++;
+        }
+      } catch (error) {
+        console.error('Error updating note:', error);
+      }
+    }
+
+    if (updatedCount > 0) {
+      const targetLabel = newStatus ? STATUS_LABELS[newStatus] : NOTE_TYPE_LABELS[newType!];
+      vscode.window.showInformationMessage(
+        `Moved ${updatedCount} note(s) to ${targetLabel}`
+      );
+    }
   }
 
   /**

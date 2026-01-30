@@ -1,8 +1,8 @@
 {
   "name": "adrai-review-notes",
-  "displayName": "adrAI Review Notes",
-  "description": "Personal annotation layer for adrAI artifact review with debate promotion",
-"version": "0.4.2",
+  "displayName": "adrai Review Notes",
+  "description": "Personal annotation layer for adrai artifact review with debate promotion",
+"version": "0.8.2",
   "publisher": "sprantic",
   "author": {
     "name": "sprantic"
@@ -28,7 +28,7 @@
     "notes",
     "annotation",
     "debate",
-    "adrAI",
+    "adrai",
     "AIDE"
   ],
   "activationEvents": ["*"],
@@ -38,7 +38,7 @@
       "activitybar": [
         {
           "id": "adrai-review-notes",
-          "title": "Review Notes",
+          "title": "ADRAI REVIEW NOTES",
           "icon": "media/icons/review-notes.svg"
         }
       ]
@@ -47,9 +47,9 @@
       "adrai-review-notes": [
         {
           "id": "adraiReviewNotes",
-          "name": "Review Notes",
+          "name": "ADRAI REVIEW NOTES",
           "icon": "media/icons/review-notes.svg",
-          "contextualTitle": "adrAI Review Notes"
+          "contextualTitle": "adrai Review Notes"
         }
       ]
     },
@@ -57,122 +57,168 @@
       {
         "command": "adrai.addNote",
         "title": "Add Review Note",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(add)"
       },
       {
         "command": "adrai.addLocation",
         "title": "Add Location to Note",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(link)"
       },
       {
         "command": "adrai.showPanel",
         "title": "Toggle Review Notes Panel",
-        "category": "adrAI"
+        "category": "adrai"
       },
       {
         "command": "adrai.promoteToDebate",
         "title": "Promote to Debate",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(rocket)"
       },
       {
         "command": "adrai.resolveNote",
         "title": "Resolve Note",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(check)"
       },
       {
         "command": "adrai.editNote",
         "title": "Edit Note",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(edit)"
       },
       {
         "command": "adrai.deleteNote",
         "title": "Delete Note",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(trash)"
       },
       {
         "command": "adrai.refreshNotes",
         "title": "Refresh Notes",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(refresh)"
       },
       {
         "command": "adrai.goToLocation",
         "title": "Go to Location",
-        "category": "adrAI"
+        "category": "adrai"
       },
       {
         "command": "adrai.searchNotes",
         "title": "Search Notes",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(search)"
+      },
+      {
+        "command": "adrai.clearSearch",
+        "title": "Clear Search",
+        "category": "adrai",
+        "icon": "$(search-stop)"
       },
       {
         "command": "adrai.filterByType",
         "title": "Filter by Type",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(filter)"
       },
       {
         "command": "adrai.clearFilters",
         "title": "Clear Filters",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(clear-all)"
       },
       {
         "command": "adrai.quickNote",
         "title": "Quick Bookmark Note",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(bookmark)"
       },
       {
         "command": "adrai.toggleBranchFilter",
         "title": "Toggle Branch Filter",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(git-branch)"
+      },
+      {
+        "command": "adrai.toggleBranchFilterOff",
+        "title": "Toggle Branch Filter (Active)",
+        "category": "adrai",
+        "icon": "$(pass-filled)"
       },
       {
         "command": "adrai.removeLocation",
         "title": "Remove Location",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(remove)"
       },
       {
         "command": "adrai.cleanupStaleLocations",
         "title": "Cleanup Stale Locations",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(trash)"
       },
       {
         "command": "adrai.resolveSelected",
         "title": "Resolve Selected Notes",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(check-all)"
       },
       {
         "command": "adrai.deleteSelected",
         "title": "Delete Selected Notes",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(trash)"
       },
       {
         "command": "adrai.resolveAllInGroup",
         "title": "Resolve All in Group",
-        "category": "adrAI",
+        "category": "adrai",
         "icon": "$(check-all)"
+      },
+      {
+        "command": "adrai.cycleSortBy",
+        "title": "Cycle Sort Mode",
+        "category": "adrai",
+        "icon": "$(sort-precedence)"
+      },
+      {
+        "command": "adrai.forceNavigate",
+        "title": "Navigate to Selected Note",
+        "category": "adrai"
+      },
+      {
+        "command": "adrai.openSettings",
+        "title": "Settings",
+        "category": "adrai",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "adrai.setStatus",
+        "title": "Set Status...",
+        "category": "adrai",
+        "icon": "$(list-selection)"
+      },
+      {
+        "command": "adrai.copyNote",
+        "title": "Copy Note Text",
+        "category": "adrai",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "adrai.undo",
+        "title": "Undo",
+        "category": "adrai",
+        "icon": "$(discard)"
       }
     ],
     "keybindings": [
       {
         "command": "adrai.addNote",
         "key": "ctrl+shift+n",
-        "mac": "cmd+shift+n",
-        "when": "editorTextFocus || focusedView == adraiReviewNotes"
+        "mac": "cmd+shift+n"
       },
       {
         "command": "adrai.addLocation",
@@ -194,8 +240,30 @@
       {
         "command": "adrai.quickNote",
         "key": "ctrl+shift+b",
-        "mac": "cmd+shift+b",
-        "when": "editorTextFocus || focusedView == adraiReviewNotes"
+        "mac": "cmd+shift+b"
+      },
+      {
+        "command": "adrai.forceNavigate",
+        "key": "ctrl+alt+enter",
+        "mac": "cmd+alt+enter",
+        "when": "focusedView == adraiReviewNotes"
+      },
+      {
+        "command": "adrai.copyNote",
+        "key": "ctrl+c",
+        "mac": "cmd+c",
+        "when": "focusedView == adraiReviewNotes"
+      },
+      {
+        "command": "adrai.editNote",
+        "key": "f2",
+        "when": "focusedView == adraiReviewNotes"
+      },
+      {
+        "command": "adrai.undo",
+        "key": "ctrl+z",
+        "mac": "cmd+z",
+        "when": "focusedView == adraiReviewNotes"
       }
     ],
     "menus": {
@@ -203,22 +271,42 @@
         {
           "command": "adrai.addNote",
           "when": "view == adraiReviewNotes",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "adrai.searchNotes",
-          "when": "view == adraiReviewNotes",
-          "group": "navigation"
+          "when": "view == adraiReviewNotes && !adrai.searchActive",
+          "group": "navigation@2"
+        },
+        {
+          "command": "adrai.clearSearch",
+          "when": "view == adraiReviewNotes && adrai.searchActive",
+          "group": "navigation@2"
         },
         {
           "command": "adrai.toggleBranchFilter",
-          "when": "view == adraiReviewNotes",
-          "group": "navigation"
+          "when": "view == adraiReviewNotes && !adrai.branchFilterActive && adrai.hasGit",
+          "group": "navigation@3"
+        },
+        {
+          "command": "adrai.toggleBranchFilterOff",
+          "when": "view == adraiReviewNotes && adrai.branchFilterActive && adrai.hasGit",
+          "group": "navigation@3"
         },
         {
           "command": "adrai.refreshNotes",
           "when": "view == adraiReviewNotes",
-          "group": "navigation"
+          "group": "navigation@4"
+        },
+        {
+          "command": "adrai.cycleSortBy",
+          "when": "view == adraiReviewNotes",
+          "group": "navigation@5"
+        },
+        {
+          "command": "adrai.openSettings",
+          "when": "view == adraiReviewNotes",
+          "group": "navigation@6"
         },
         {
           "command": "adrai.filterByType",
@@ -244,6 +332,11 @@
         },
         {
           "command": "adrai.promoteToDebate",
+          "when": "view == adraiReviewNotes && viewItem == note",
+          "group": "1_actions"
+        },
+        {
+          "command": "adrai.setStatus",
           "when": "view == adraiReviewNotes && viewItem == note",
           "group": "1_actions"
         },
@@ -281,6 +374,16 @@
           "command": "adrai.deleteNote",
           "when": "view == adraiReviewNotes && viewItem == note-other-branch",
           "group": "3_delete"
+        },
+        {
+          "command": "adrai.deleteSelected",
+          "when": "view == adraiReviewNotes && viewItem == note-other-branch",
+          "group": "3_delete"
+        },
+        {
+          "command": "adrai.setStatus",
+          "when": "view == adraiReviewNotes && viewItem == note-other-branch",
+          "group": "1_actions"
         },
         {
           "command": "adrai.resolveNote",
@@ -333,12 +436,17 @@
       }
     ],
     "configuration": {
-      "title": "adrAI Review Notes",
+      "title": "adrai Review Notes",
       "properties": {
         "adrai.storageLocation": {
           "type": "string",
           "default": "~/.adrai/review-notes.yaml",
           "description": "Path to the review notes YAML file"
+        },
+        "adrai.projectStorage": {
+          "type": "boolean",
+          "default": false,
+          "description": "When enabled, notes are stored per-project: ~/.adrai/[project-name]/review-notes.yaml"
         },
         "adrai.debateTemplateDir": {
           "type": "string",
@@ -360,6 +468,58 @@
           "type": "boolean",
           "default": false,
           "description": "Show only notes from the current git branch"
+        },
+        "adrai.showLocation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show file location in note description"
+        },
+        "adrai.showBranch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show branch name for notes from other branches"
+        },
+        "adrai.showDate": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show creation date in note description"
+        },
+        "adrai.sortBy": {
+          "type": "string",
+          "enum": ["date", "type", "status"],
+          "default": "date",
+          "description": "Sort notes within groups (type sort when grouped by status, status sort when grouped by type)"
+        },
+        "adrai.sortOrder": {
+          "type": "string",
+          "enum": ["asc", "desc"],
+          "default": "desc",
+          "description": "Sort order: ascending (oldest/lowest first) or descending (newest/highest first)"
+        },
+        "adrai.quickNoteDefaultType": {
+          "type": "string",
+          "enum": ["idea", "bookmark", "uncertainty", "question", "concern", "pre-debate"],
+          "enumDescriptions": [
+            "Idea - Capture insights (+)",
+            "Bookmark - Return later",
+            "Uncertainty - Need context (~)",
+            "Question - Need answer (?)",
+            "Concern - Potential issue (!)",
+            "Pre-debate - May warrant DEB-NNNN (!!)"
+          ],
+          "default": "bookmark",
+          "description": "Default note type for Quick Bookmark (Ctrl+Shift+B) when no punctuation is detected"
+        },
+        "adrai.quickNoteDefaultStatus": {
+          "type": "string",
+          "enum": ["open", "investigating", "promote"],
+          "default": "open",
+          "description": "Default status for Quick Bookmark notes"
+        },
+        "adrai.showNoteIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show icons on individual notes (type icons for status grouping, status icons for type/file grouping)"
         }
       }
     }

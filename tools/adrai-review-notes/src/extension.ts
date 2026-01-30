@@ -1,7 +1,7 @@
 /**
- * adrAI Review Notes - VS Code Extension
+ * adrai Review Notes - VS Code Extension
  *
- * Personal annotation layer for adrAI artifact review with debate promotion.
+ * Personal annotation layer for adrai artifact review with debate promotion.
  *
  * Features:
  * - Sidebar panel showing all notes grouped by status/type/file
@@ -12,9 +12,10 @@
  */
 
 import * as vscode from 'vscode';
-import { NoteStorage } from './noteStorage';
+import { NoteStorage, isGitRepository } from './noteStorage';
 import { NoteProvider } from './noteProvider';
 import { registerCommands } from './commands';
+import { SettingsPanel } from './settingsPanel';
 
 /**
  * FileDecorationProvider to color notes based on branch
@@ -58,7 +59,7 @@ let provider: NoteProvider;
  */
 export function activate(context: vscode.ExtensionContext): void {
   try {
-    console.log('adrAI Review Notes extension is activating...');
+    console.log('adrai Review Notes extension is activating...');
 
     // Initialize storage
     storage = new NoteStorage();
@@ -67,22 +68,35 @@ export function activate(context: vscode.ExtensionContext): void {
     // Initialize tree view provider
     provider = new NoteProvider(storage);
 
-    // Create tree view with multi-select enabled
+    // Create tree view with multi-select and drag/drop enabled
     const treeView = vscode.window.createTreeView('adraiReviewNotes', {
       treeDataProvider: provider,
       showCollapseAll: true,
-      canSelectMany: true
+      canSelectMany: true,
+      dragAndDropController: provider
     });
     context.subscriptions.push(treeView);
 
     // Register commands
-    registerCommands(context, storage, provider);
+    registerCommands(context, storage, provider, treeView);
+
+    // Register settings panel command
+    context.subscriptions.push(
+      vscode.commands.registerCommand('adrai.openSettings', () => {
+        SettingsPanel.show(context.extensionUri);
+      })
+    );
 
     // Register file decoration provider for colored text
     const decorationProvider = new NoteDecorationProvider();
     context.subscriptions.push(
       vscode.window.registerFileDecorationProvider(decorationProvider)
     );
+
+    // AIDE-0006: Check git availability and set context for branch toggle visibility
+    isGitRepository().then(hasGit => {
+      vscode.commands.executeCommand('setContext', 'adrai.hasGit', hasGit);
+    });
 
     // Show welcome message on first use
     const hasShownWelcome = context.globalState.get<boolean>('adrai.shownWelcome');
@@ -103,11 +117,11 @@ export function activate(context: vscode.ExtensionContext): void {
     // Update status bar when notes change
     storage.onChange(() => updateStatusBar(statusBarItem, storage));
 
-    console.log('adrAI Review Notes extension activated');
-    vscode.window.showInformationMessage('adrAI Review Notes activated!');
+    console.log('adrai Review Notes extension activated');
+    vscode.window.showInformationMessage('adrai Review Notes activated!');
   } catch (error) {
-    console.error('adrAI Review Notes activation failed:', error);
-    vscode.window.showErrorMessage(`adrAI Review Notes failed to activate: ${error}`);
+    console.error('adrai Review Notes activation failed:', error);
+    vscode.window.showErrorMessage(`adrai Review Notes failed to activate: ${error}`);
   }
 }
 
@@ -115,7 +129,7 @@ export function activate(context: vscode.ExtensionContext): void {
  * Extension deactivation
  */
 export function deactivate(): void {
-  console.log('adrAI Review Notes extension deactivated');
+  console.log('adrai Review Notes extension deactivated');
 }
 
 /**
@@ -139,7 +153,7 @@ function updateStatusBar(item: vscode.StatusBarItem, storage: NoteStorage): void
  */
 async function showWelcomeMessage(context: vscode.ExtensionContext): Promise<void> {
   const action = await vscode.window.showInformationMessage(
-    'adrAI Review Notes is ready! Use Ctrl+Shift+N (Cmd+Shift+N on Mac) to add a note at your cursor.',
+    'adrai Review Notes is ready! Use Ctrl+Shift+N (Cmd+Shift+N on Mac) to add a note at your cursor.',
     'Got it',
     'Show Panel'
   );
