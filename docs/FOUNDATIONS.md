@@ -107,7 +107,7 @@ That reduces cognitive load and ensures important concerns aren't lost.
 
 ### Goals Overview
 
-adrai aims to structure the validation process in AI-assisted engineering through five strategic goals: review-triggered debates, artifact lineage, dependency mesh management, AI-aided review, and personal annotations.
+adrai aims to structure the validation process in AI-assisted engineering through six strategic goals: review-triggered debates, artifact lineage, dependency mesh management, AI-aided review, personal annotations, and media break elimination.
 
 ### Strategic Goals
 
@@ -209,6 +209,27 @@ adrai aims to structure the validation process in AI-assisted engineering throug
 | Extension features | 0 | 7 commands | 2026-01-29 |
 | Adoption | 0 | Active use | 2026-Q1 |
 
+#### Goal 6: Media Break Elimination
+
+**Description:** Progressively eliminate context-switching friction between tools (Jira, Git, VS Code, MR web UI) so developers maintain flow state and context is preserved automatically.
+
+**Why it matters:** Every media break loses context. Engineers mentally re-load state, re-find their place, re-establish intent. Eliminating breaks compounds productivity gains from AI assistance.
+
+**Roadmap:** [adrai Future Vision](adrai-concepts/adrai-future-vision.md)
+
+**Success Criteria:**
+- [ ] CLI tool for Jira → Branch with context injection
+- [ ] Full MR review possible in VS Code (no browser needed)
+- [ ] AI maintains context summary across transitions
+- [ ] Notifications when blocking debates resolve
+
+**Key Results:**
+
+| Key Result | Baseline | Target | Due Date |
+|------------|----------|--------|----------|
+| Media breaks requiring manual copy | 7 | 2 | 2026-Q3 |
+| Context preserved across transitions | 0% | 80% | 2026-Q4 |
+
 ### Objectives Breakdown
 
 | ID | Objective | Parent Goal | Priority | Status | Due |
@@ -221,6 +242,8 @@ adrai aims to structure the validation process in AI-assisted engineering throug
 | OBJ-006 | Build mesh query CLI | Goal 3 | Medium | Not Started | 2026-Q2 |
 | OBJ-007 | Auto-generate Mermaid diagrams | Goal 3 | Medium | Not Started | 2026-Q2 |
 | OBJ-008 | Implement AI review skills | Goal 4 | High | Not Started | 2026-Q2 |
+| OBJ-009 | Create Jira→Branch CLI | Goal 6 | Medium | Not Started | 2026-Q2 |
+| OBJ-010 | VS Code MR review integration | Goal 6 | High | Not Started | 2026-Q3 |
 
 ### Milestones
 
@@ -275,6 +298,7 @@ adrai aims to structure the validation process in AI-assisted engineering throug
 | Goal 3: Dependency Mesh | 1/2 | 1/2 |
 | Goal 4: AI-Aided Review | 0/2 | 0/2 |
 | Goal 5: Personal Annotations | 1/1 | 2/2 |
+| Goal 6: Media Break Elimination | 0/2 | 0/2 |
 
 ---
 

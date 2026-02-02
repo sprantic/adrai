@@ -16,57 +16,6 @@ List of Items → Conceptualization → OK Point → Realization → Done Point 
 
 **AI role:** AI prepares. Humans decide.
 
-### Media Breaks
-
-Context transfers between tools at key transition points:
-
-```mermaid
-flowchart LR
-    subgraph external["External Systems"]
-        JIRA[("Jira<br/>Ticket")]
-        MR_WEB["MR<br/>(Web UI)"]
-    end
-
-    subgraph vscode["VS Code"]
-        CODE["Coding<br/>(Implementation)"]
-        EXT["Review Notes<br/>Extension"]
-        NOTES[("~/.adrai/<br/>review-notes.yaml")]
-    end
-
-    subgraph repo["Git Repository"]
-        BRANCH["Branch"]
-        DEB["docs/debates/<br/>DEB-NNNN.md"]
-        ADR["docs/adr/<br/>ADR-NNN.md"]
-        PLAN["plans/<br/>AIDE-NNNN.md"]
-    end
-
-    JIRA -->|"1. ticket ID"| BRANCH
-    BRANCH -->|"2. checkout"| CODE
-    CODE -->|"3. commit"| BRANCH
-    BRANCH -->|"4. push"| MR_WEB
-    MR_WEB -->|"5. review"| EXT
-    EXT -->|"6. capture"| NOTES
-    NOTES -->|"7. promote"| DEB
-    MR_WEB -.->|"7b. escalate"| DEB
-    DEB -->|"8. resolve"| ADR
-    ADR -->|"9. unblock"| PLAN
-
-    style JIRA fill:#f9f,stroke:#333
-    style MR_WEB fill:#f9f,stroke:#333
-    style CODE fill:#9cf,stroke:#333
-    style EXT fill:#9cf,stroke:#333
-    style NOTES fill:#9cf,stroke:#333
-    style BRANCH fill:#9f9,stroke:#333
-    style DEB fill:#9f9,stroke:#333
-    style ADR fill:#9f9,stroke:#333
-    style PLAN fill:#9f9,stroke:#333
-```
-
-**Legend:**
-- **Pink:** External web interfaces (context leaves developer's machine)
-- **Blue:** VS Code / local tools (personal workspace)
-- **Green:** Git repository (shared, version-controlled)
-
 ---
 
 ## The Development Flow
