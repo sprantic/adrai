@@ -17,7 +17,7 @@ AI-assisted software development has dramatically increased engineering velocity
 
 adrai extends AIDE with:
 
-- **Review-triggered debates** with 7-gate escalation criteria
+- **Review-triggered debates** with simple 3-gate escalation
 - **Artifact lineage** answering "why does this exist?" at a glance
 - **Dependency mesh** tracking blocking relationships
 - **AI-aided review** helping humans validate faster
@@ -47,42 +47,33 @@ When a review note warrants formal discussion:
 
 | Document | Description |
 |----------|-------------|
-| [Vision](docs/vision.md) | Why adrai exists, problem statement, success indicators |
-| [Goals](docs/goals.md) | 5 strategic goals with objectives and milestones |
-| [Constraints](docs/constraints.md) | Technical boundaries and design decisions |
-| [Architecture](docs/software-architecture/overview.md) | System structure and component design |
-| [adrai Concepts](docs/adrai-conceptual-overview.md) | Complete debate system design |
-| [Debates Guide](docs/debates/README.md) | How to use debates, 7-gate flow, templates |
-| [Review Workflow](docs/debates/review-workflow.md) | Personal notes → debate promotion flow |
+| [Foundations](docs/FOUNDATIONS.md) | Vision, goals, constraints |
+| [Workflows](docs/WORKFLOWS.md) | Team rituals and AI assistance |
+| [Architecture](docs/adrai-concepts/adrai-software-architecture.md) | System structure and component design |
+| [adrai Concepts](docs/adrai-concepts/adrai-conceptual-overview.md) | Complete debate system design |
+| [Debates Guide](docs/debates/README.md) | How to use debates, escalation criteria, templates |
 
 ## Project Structure
 
 ```
 adrai/
 ├── docs/
-│   ├── vision.md              # Why adrai exists
-│   ├── goals.md               # Strategic objectives
-│   ├── constraints.md         # Technical boundaries
+│   ├── FOUNDATIONS.md         # Vision, goals, constraints
+│   ├── WORKFLOWS.md           # Team rituals, AI assistance
+│   ├── adrai-concepts/        # System design and concepts
 │   ├── adr/                   # Architecture Decision Records
-│   ├── debates/               # Debate artifacts and templates
-│   └── software-architecture/ # System design
+│   └── debates/               # Debate artifacts and templates
 ├── plans/                     # AIDE work plans
 ├── tools/
 │   └── adrai-review-notes/    # VS Code extension
 └── assets/                    # Images and resources
 ```
 
-## The 7-Gate Decision Flow
+## When to Create a Debate
 
-A debate is warranted if ANY gate triggers:
+Use the **3-gate criteria**: Disagreement, Irreversible, or Uncertainty.
 
-1. **Critical file patterns** — auth/*, security/*, core config
-2. **AIDE risk level Critical** — Plan marked as critical risk
-3. **Stakeholder disagreement** — Multiple reviewers conflict
-4. **Sets new precedent** — Establishes pattern for future work
-5. **Difficult to reverse** — High cost to change later
-6. **Complexity score ≥10** — Calculated from multiple factors
-7. **Author flags uncertainty** — "I'm not sure about this"
+See [Debates Guide](docs/debates/README.md) for details.
 
 ## Technology Stack
 

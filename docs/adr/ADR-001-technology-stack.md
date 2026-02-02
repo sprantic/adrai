@@ -124,7 +124,7 @@ The technology choices need to align with:
 ## References
 
 - [AIDE-0001: Review Notes Extension](../../plans/AIDE-0001-review-notes-extension.md)
-- [adrai Conceptual Overview](../adrai-conceptual-overview.md)
+- [adrai Conceptual Overview](../adrai-concepts/adrai-conceptual-overview.md)
 - [Argdown](https://argdown.org/)
 - [Mermaid](https://mermaid.js.org/)
 

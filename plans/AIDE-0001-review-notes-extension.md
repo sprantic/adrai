@@ -30,7 +30,7 @@ The adrai debate system requires formal `DEB-NNNN` artifacts. This creates frict
 
 ### Related Work
 
-- adrai Conceptual Overview: [docs/adrai-conceptual-overview.md](../docs/adrai-conceptual-overview.md)
+- adrai Conceptual Overview: [docs/adrai-concepts/adrai-conceptual-overview.md](../docs/adrai-concepts/adrai-conceptual-overview.md)
 - Debate System: [docs/debates/README.md](../docs/debates/README.md)
 
 ---

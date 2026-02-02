@@ -94,6 +94,21 @@ When a note warrants formal discussion:
 
 🏗️ *This function is currently incomplete and just a teaser for the collaborative support of adrai* 🏗️
 
+### When to Promote: The 3-Gate Flow
+
+Apply the **3-Gate criteria** to decide if a note should become a formal debate:
+
+| Gate | Question | If YES |
+|------|----------|--------|
+| 1 | **Disagreement** - Can't resolve in MR comments? | Promote |
+| 2 | **Irreversible** - Decision hard to undo later? | Promote |
+| 3 | **Uncertainty** - Anyone flags "not sure"? | Promote |
+
+**If NO to all gates:** Standard MR review continues.
+**If ANY gate triggers:** Use "Promote to Debate" to create DEB-NNNN.
+
+See [docs/WORKFLOWS.md](../../docs/WORKFLOWS.md) for the full development workflow.
+
 ## Configuration
 
 In VS Code settings (`settings.json`):

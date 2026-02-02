@@ -159,20 +159,6 @@ const DEFAULT_DEBATE_TEMPLATE = `# DEB-NNNN: [Central Question]
 
 ---
 
-## Complexity Score
-
-| Factor | Score (0-3) | Notes |
-|--------|-------------|-------|
-| Alternative Count | | |
-| Trade-off Severity | | |
-| Stakeholder Disagreement | | |
-| Precedent Setting | | |
-| Knowledge Gap | | |
-| Time Horizon | | |
-| **Total** | /18 | |
-
----
-
 ## Revision History
 
 | Version | Date | Author | Changes |

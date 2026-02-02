@@ -208,60 +208,18 @@ AI: "Key things to verify in this plan:
 
 **Core Principle:** A review spawns a debate when **reasonable experts could disagree**. Simple approve/reject suffices when review is **verification**, not **judgment**.
 
-#### The 7-Gate Decision Flow
+#### The 3-Gate Decision Flow
 
-```
-START: Review triggered (CICD, ceremony, code review, spot-check)
-                              │
-┌─────────────────────────────┴─────────────────────────────┐
-│ GATE 1: Automatic Escalation                              │
-│ Matches critical file patterns? (auth/*, security/*, etc)│
-└───────────────────────────────────────────────────────────┘
-        │ Yes → DEBATE                │ No ↓
-┌───────────────────────────────────────────────────────────┐
-│ GATE 2: Risk Level Check                                  │
-│ Is AIDE risk level Critical?                              │
-└───────────────────────────────────────────────────────────┘
-        │ Yes → DEBATE                │ No ↓
-┌───────────────────────────────────────────────────────────┐
-│ GATE 3: Stakeholder Disagreement                          │
-│ Have reviewers expressed conflicting views?               │
-└───────────────────────────────────────────────────────────┘
-        │ Yes → DEBATE                │ No ↓
-┌───────────────────────────────────────────────────────────┐
-│ GATE 4: Precedent Check                                   │
-│ Does this set a new pattern others will follow?           │
-└───────────────────────────────────────────────────────────┘
-        │ Yes → DEBATE                │ No ↓
-┌───────────────────────────────────────────────────────────┐
-│ GATE 5: Reversibility Check                               │
-│ Is the change difficult/impossible to reverse?            │
-└───────────────────────────────────────────────────────────┘
-        │ Yes → DEBATE                │ No ↓
-┌───────────────────────────────────────────────────────────┐
-│ GATE 6: Complexity Score ≥ 10?                            │
-│ (alternatives + trade-offs + knowledge gap + time horizon)│
-└───────────────────────────────────────────────────────────┘
-        │ Yes → DEBATE                │ No ↓
-┌───────────────────────────────────────────────────────────┐
-│ GATE 7: Author Request                                    │
-│ Has author flagged uncertainty?                           │
-└───────────────────────────────────────────────────────────┘
-        │ Yes → DEBATE                │ No → SIMPLE REVIEW
-```
+Create a debate when **any** apply:
 
-#### Complexity Score (0-18 scale)
+| Gate | Question |
+|------|----------|
+| 1 | **Disagreement** - Can't resolve in MR comments? |
+| 2 | **Irreversible** - Hard to undo later? |
+| 3 | **Uncertainty** - Anyone flags "not sure"? |
 
-| Factor | 0 | 1 | 2 | 3 |
-|--------|---|---|---|---|
-| **Alternative Count** | Single obvious | 2 options | 3+ options | No frontrunner |
-| **Trade-off Severity** | None | Minor | Significant | Irreversible |
-| **Stakeholder Disagreement** | None | Questions | Opinions | Explicit conflict |
-| **Precedent Setting** | Follows pattern | Minor deviation | New for domain | Platform-wide |
-| **Knowledge Gap** | Team knows | Brief learning | Research needed | Expert required |
-| **Time Horizon** | Days/weeks | Months | Years | Permanent |
-
-**Threshold:** Score ≥ 10 → Debate recommended
+**If NO:** Standard MR review.
+**If ANY:** Create DEB-NNNN before proceeding.
 
 #### Quick Reference
 
@@ -597,7 +555,7 @@ project/
 2. **Visualization**: ✅ Generated static site with argument maps + dependency dashboard
 3. **Trigger mechanism**: ✅ Reviews spawn debates (CICD gates, ceremonies, manual)
 4. **AI focus**: ✅ AI-aided review - help humans validate AI output efficiently
-5. **Review criteria**: ✅ 7-Gate decision flow (see Conceptual Foundations A)
+5. **Review criteria**: ✅ 3-Gate decision flow (see Conceptual Foundations A)
 6. **Lineage**: ✅ Scope taxonomy + "Why does this exist?" header (see Conceptual Foundations B)
 7. **Graph operations**: ✅ 6 core algorithms for mesh traversal (see Conceptual Foundations C)
 8. **Debate format**: ✅ Full Argdown syntax for technical users

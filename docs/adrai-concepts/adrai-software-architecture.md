@@ -3,7 +3,7 @@
 > **Version:** 2.0
 > **Last Updated:** 2026-01-31
 > **Owner:** @sprantic
-> **Related:** [Vision](../vision.md) | [Goals](../goals.md) | [Constraints](../constraints.md)
+> **Related:** [Foundations](../FOUNDATIONS.md) (vision, goals, constraints)
 
 ---
 
@@ -24,12 +24,12 @@ adrai (AIDE Review Lifecycle Management System) provides structured validation f
 
     ┌──────────┐                                      ┌──────────────┐
     │  Human   │                                      │     AI       │
-    │ Reviewer │◀─────────────────────────────────────│  Assistant   │
+    │ Reviewer │<─────────────────────────────────────│  Assistant   │
     └────┬─────┘                                      └──────┬───────┘
          │                                                   │
          │              ┌─────────────────────┐              │
          │              │                     │              │
-         └─────────────▶│       adrai          │◀─────────────┘
+         └─────────────>│       adrai         │<─────────────┘
                         │                     │
                         └─────────────────────┘
                                  │
@@ -71,8 +71,8 @@ Based on AIDE values and project constraints:
 ```
                            SYSTEM BOUNDARY
 
-   ┌─────────────────────────────────────────────────────────────────────┐
-   │                                                                     │
+   ┌────────────────────────────────────────────────────────────────────┐
+   │                                                                    │
    │   ┌─────────────────┐      ┌─────────────────┐                     │
    │   │   VS Code       │      │    CLI Tools    │                     │
    │   │   Extension     │      │   (Future)      │                     │
@@ -80,20 +80,20 @@ Based on AIDE values and project constraints:
    │            │                        │                              │
    │            ▼                        ▼                              │
    │   ┌─────────────────────────────────────────────────────────────┐  │
-   │   │                    File System Layer                         │  │
+   │   │                    File System Layer                        │  │
    │   │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │  │
-   │   │  │ ~/.adrai/     │  │  docs/       │  │  plans/      │       │  │
+   │   │  │ ~/.adrai/    │  │  docs/       │  │  plans/      │       │  │
    │   │  │ (personal)   │  │  (debates,   │  │  (AIDE       │       │  │
    │   │  │              │  │   ADRs)      │  │   plans)     │       │  │
    │   │  └──────────────┘  └──────────────┘  └──────────────┘       │  │
    │   └─────────────────────────────────────────────────────────────┘  │
-   │                                                                     │
+   │                                                                    │
    │   ┌─────────────────────────────────────────────────────────────┐  │
-   │   │                    Cross-Cutting Concerns                    │  │
-   │   │    [LINK IDs]    [YAML/MD Parsing]    [Git Integration]      │  │
+   │   │                    Cross-Cutting Concerns                   │  │
+   │   │    [LINK IDs]    [YAML/MD Parsing]    [Git Integration]     │  │
    │   └─────────────────────────────────────────────────────────────┘  │
-   │                                                                     │
-   └─────────────────────────────────────────────────────────────────────┘
+   │                                                                    │
+   └────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Component Descriptions
@@ -395,11 +395,10 @@ Key decisions that shaped this architecture:
 
 ## Related Documents
 
-- [Vision](../vision.md)
-- [Goals & Objectives](../goals.md)
-- [Constraints](../constraints.md)
+- [Foundations](../FOUNDATIONS.md) (vision, goals, constraints)
+- [Workflows](../WORKFLOWS.md) (team rituals, AI assistance)
 - [ADRs](../adr/README.md)
-- [Conceptual Overview](../adrai-conceptual-overview.md)
+- [Conceptual Overview](adrai-conceptual-overview.md)
 
 ---
 

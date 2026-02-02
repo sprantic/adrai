@@ -36,6 +36,6 @@ Index of architectural decisions for adrai (AIDE Debate Tracking System).
 
 ## Related
 
-- [adrai Conceptual Overview](../adrai-conceptual-overview.md)
-- [Constraints](../constraints.md)
-- [Architecture Overview](../software-architecture/overview.md)
+- [adrai Conceptual Overview](../adrai-concepts/adrai-conceptual-overview.md)
+- [Foundations](../FOUNDATIONS.md) (includes constraints)
+- [Architecture Overview](../adrai-concepts/adrai-software-architecture.md)

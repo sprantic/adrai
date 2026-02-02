@@ -139,8 +139,9 @@ project/
 │   │   ├── .deb-graph.yaml
 │   │   ├── DEB-NNNN-*.deb.md
 │   │   └── templates/
-│   └── software-architecture/
-│       └── overview.md
+│   └── adrai-concepts/
+│       ├── adrai-conceptual-overview.md
+│       └── adrai-software-architecture.md
 ├── plans/
 │   ├── .aide-tracker.md
 │   └── AIDE-NNNN-*.md
@@ -178,7 +179,7 @@ project/
 ## References
 
 - [ADR-001: Technology Stack](ADR-001-technology-stack.md)
-- [adrai Conceptual Overview](../adrai-conceptual-overview.md)
+- [adrai Conceptual Overview](../adrai-concepts/adrai-conceptual-overview.md)
 
 ---
 

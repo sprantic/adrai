@@ -104,7 +104,7 @@ When keybinding is triggered without an open editor:
 
 ### Phase 4: Documentation Updates
 
-**File: `docs/adrai-conceptual-overview.md`**
+**File: `docs/adrai-concepts/adrai-conceptual-overview.md`**
 
 Line 607: Update resolved questions:
 ```markdown
@@ -144,7 +144,7 @@ Add Idea row to Note Types table:
 | `tools/adrai-review-notes/src/commands.ts` | Detection, description, no-editor handling |
 | `tools/adrai-review-notes/package.json` | Keybindings, enum |
 | `tools/adrai-review-notes/README.md` | Note Types table |
-| `docs/adrai-conceptual-overview.md` | Resolved questions (5→6 types) |
+| `docs/adrai-concepts/adrai-conceptual-overview.md` | Resolved questions (5→6 types) |
 | `docs/debates/review-workflow.md` | Type selection list, Note Types Reference table |
 
 ---

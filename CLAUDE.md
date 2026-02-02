@@ -63,19 +63,15 @@ docs/debates/
 | ADR | `Resolved by: DEB-NNNN` when debate produced decision |
 | Debate | `Depends On: DEB-NNNN` and `Blocks: AIDE-NNNN, ADR-NNN` |
 
-### 7-Gate Decision Flow
+### When to Create a Debate
 
-When reviewing, a debate is warranted if ANY gate triggers:
+Create a debate when **any** apply:
 
-1. Critical file patterns (auth/*, security/*)
-2. AIDE risk level Critical
-3. Stakeholder disagreement
-4. Sets new precedent/pattern
-5. Difficult to reverse
-6. Complexity score >= 10
-7. Author flags uncertainty
+1. **Disagreement** - Two people can't resolve in MR comments
+2. **Irreversible** - Decision is hard to undo later
+3. **Uncertainty** - Author or reviewer flags "not sure about this"
 
-See [docs/debates/README.md](docs/debates/README.md) for full criteria.
+Everything else → Standard MR review. See [docs/debates/README.md](docs/debates/README.md) for details.
 
 ---
 
@@ -84,12 +80,11 @@ See [docs/debates/README.md](docs/debates/README.md) for full criteria.
 ```
 adrai/
 ├── docs/
-│   ├── vision.md              # Why adrai exists
-│   ├── goals.md               # What we're achieving
-│   ├── constraints.md         # Technical boundaries
+│   ├── FOUNDATIONS.md         # Vision, goals, constraints
+│   ├── WORKFLOWS.md           # Team rituals, AI assistance
+│   ├── adrai-concepts/        # System design and concepts
 │   ├── adr/                   # Architecture decisions
-│   ├── debates/               # Debate artifacts (adrai-specific)
-│   └── software-architecture/ # System overview
+│   └── debates/               # Debate artifacts (adrai-specific)
 ├── plans/
 │   ├── .aide-tracker.md       # AIDE ID allocation
 │   └── AIDE-NNNN-*.md         # Work plans
@@ -126,7 +121,7 @@ adrai/
 
 AI should:
 - Check existing debates for related decisions
-- Respect constraints in `docs/constraints.md`
+- Respect constraints in `docs/FOUNDATIONS.md`
 - Follow patterns established in ADRs
 - Mark uncertainty with review notes (VS Code extension)
 - Never resolve debates autonomously
@@ -154,7 +149,7 @@ The VS Code extension (`tools/adrai-review-notes/`) supports:
 
 - Implement blocked plans (`Blocked by: DEB-NNNN`)
 - Resolve debates or vote without human direction
-- Skip the 7-gate flow for complex decisions
+- Skip debate escalation for complex decisions
 - Create ADRs without debate trail (for significant decisions)
 - Generate content that conflicts with resolved ADRs
 
@@ -164,11 +159,10 @@ The VS Code extension (`tools/adrai-review-notes/`) supports:
 
 | Document | Purpose |
 |----------|---------|
-| [Vision](docs/vision.md) | Why adrai exists |
-| [Goals](docs/goals.md) | What we're achieving |
-| [Constraints](docs/constraints.md) | Technical boundaries |
-| [Architecture](docs/software-architecture/overview.md) | System structure |
-| [adrai Conceptual Overview](docs/adrai-conceptual-overview.md) | Full debate system design |
+| [Foundations](docs/FOUNDATIONS.md) | Vision, goals, constraints |
+| [Workflows](docs/WORKFLOWS.md) | Team rituals, AI assistance |
+| [Architecture](docs/adrai-concepts/adrai-software-architecture.md) | System structure |
+| [adrai Conceptual Overview](docs/adrai-concepts/adrai-conceptual-overview.md) | Full debate system design |
 | [Debates README](docs/debates/README.md) | Debate quick reference |
 
 ---
